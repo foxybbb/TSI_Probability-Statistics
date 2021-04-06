@@ -10,7 +10,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 #### git reposetory https://github.com/foxybbb/TSI_Probability-Statistics
 ##Formulas
 
@@ -30,6 +29,8 @@ approxMoivreLaplaceLocal = function(k, n, p){
 	p = fi/sqrt(n*p*(1-p))
 	return(p)
 }
+
+
 ```
 
 ```{r}
@@ -42,4 +43,9 @@ ProbabilityApproximate = function (k,n,p)
     return (bernoulliTrialCalc(k,n,p))
   }
 }
+```
+
+
+```{r}
+plot(cars)
 ```
