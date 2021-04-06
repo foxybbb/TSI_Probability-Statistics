@@ -11,8 +11,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#### git reposetory https://github.com/foxybbb/TSI_Probability-Statistics
-##Formulas
+git repository: https://github.com/foxybbb/TSI_Probability-Statistics
+
+## Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
 
 ```{r}
 bernoulliTrialCalc = function(k,n.p){
@@ -32,6 +33,7 @@ approxMoivreLaplaceLocal = function(k, n, p){
 }
 ```
 
+## Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
 ```{r}
 ProbabilityApproximate = function (k,n,p)
 {
