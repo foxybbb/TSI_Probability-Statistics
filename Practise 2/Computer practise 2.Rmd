@@ -16,7 +16,7 @@ git repository: https://github.com/foxybbb/TSI_Probability-Statistics
 ## Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
 
 ```{r}
-bernoulliTrialCalc = function(k,n.p){
+bernoulliTrialCalc = function(k,n,p){
 return (dbinom(k, n,p))
 }
 ```
@@ -35,9 +35,10 @@ approxMoivreLaplaceLocal = function(k, n, p){
 
 ## Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
 ```{r}
+probMin = 0.2
 ProbabilityApproximate = function (k,n,p)
 {
-  if(n > 20){
+  if(n > 20&&((p<probMin)||1-p<probMin)){
     return (approxMoivreLaplaceLocal(k,n,p))
   }
   else{
@@ -45,3 +46,41 @@ ProbabilityApproximate = function (k,n,p)
   }
 }
 ```
+
+
+```{r}
+ProbabilityApproximate(10,25,0.5)
+
+```
+## Use the developed function to solve all problems from Practice 3 and Practice 4 (include the problem statementsinto the markdown)
+
+### Practise 3 
+
+### Practise 4
+
+## Implement the cumulative distribution functions
+
+$$
+  \begin{equation*}
+    F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
+  \end{equation*}     
+$$
+```{r}
+```
+
+
+$$
+  \begin{equation*}
+    F_{normal}(k,n,p)= \phi \left( \frac{k-np}{\sqrt{np(1-p)}} \right)
+  \end{equation*}  
+
+$$
+
+
+```{r}
+
+```
+## Implement a function for calculating the approximation accuracy metric as
+$$
+  D(n,p) = max|F_{normal}(k,n,p) - F_{binom}(k,n,p)| 
+$$
