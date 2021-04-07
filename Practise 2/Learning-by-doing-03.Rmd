@@ -1,0 +1,186 @@
+---
+title: "Probability Theory and Mathematical Statistics"
+subtitle: "Script 3: Bernoulli trials"
+author: "Dmitry Pavlyuk"
+#date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Bernoulli formula
+## Problem. 
+Let a network consists of 8 computers. The probability of failure of each of them during a year is 10% (computers fail independently of one another).
+What is the probability of:
+* exactly one computer failure (during the same time frame)?
+* no computer failures?
+* more than one computer failure?
+
+## Solution
+```{r}
+n = 8
+p = 0.1
+k = 1
+# Manual calculation using the Bernoulli formula
+p1f = choose(n,k)*p^k*(1-p)^(n-k)
+```
+Answer: probability of exactly one computer failure is `r p1f`
+
+```{r}
+# Calculation using the embedded function
+p1 = dbinom(k, n,p)
+```
+Does the embedded *dbinom* function return the same result? `r all.equal(p1f,p1)`
+
+```{r}
+k = 0
+p0 = dbinom(k, n,p)
+p0
+```
+Answer: probability of no computer failures is `r p0`
+
+```{r}
+p_more1 = 1 - p0 - p1
+```
+Answer: probability of more than one computer failure is `r p_more1`
+
+# Moivre-Laplace (normal) approximation
+## Problem
+Let the local network includes not 8 (as in the example in the previous section), but 800 computers. The probability of failure is 10% for each.
+What is the probability that exactly 85 computer failures?
+## Solution
+```{r}
+# Define a function for Moivre-Laplace (normal) approximation
+approxMoivreLaplaceLocal = function(k, n, p){
+	x = (k - n*p)/sqrt(n*p*(1-p))
+	# Call the normal density function
+  fi = dnorm(x)
+	# Approximate calculation
+	p = fi/sqrt(n*p*(1-p))
+	return(p)
+}
+
+n = 800
+p = 0.1
+k = 85
+
+p_ML = approxMoivreLaplaceLocal(k, n, p)
+p_Bernoulli = choose(n,k)*p^k*(1-p)^(n-k)
+```
+Approximate probability (Moivre-Laplace approximation) = `r p_ML` 
+
+Exact probability (Bernoulli formula) = `r p_Bernoulli` 
+
+Compare calculated values: `r all.equal(p_ML,p_Bernoulli)`
+
+## Problem
+What is the probability that the number of failures will be from 80 to 100?
+
+## Solution
+```{r}
+# Define a function for integral Moivre-Laplace (normal) approximation
+
+approxMoivreLaplaceIntegral = function(k1, k2, n, p){
+	x1 = (k1 - n*p)/sqrt(n*p*(1-p))
+	x2 = (k2 - n*p)/sqrt(n*p*(1-p))
+	Fi1 = pnorm(x1)
+	Fi2 = pnorm(x2)
+	p = Fi2-Fi1
+	return (p)
+}
+
+k1 = 80
+k2 = 100
+
+p_ML = approxMoivreLaplaceIntegral(k1, k2, n, p)
+p_Bernoulli = 0
+for (k in k1:k2){
+  p_Bernoulli = p_Bernoulli + choose(n,k)*p^k*(1-p)^(n-k)
+}
+```
+Approximate probability (Moivre-Laplace approximation) = `r p_ML` 
+
+Exact probability (Bernoulli formula) = `r p_Bernoulli` 
+
+Compare calculated values: `r all.equal(p_ML,p_Bernoulli)`
+
+# Poisson approximation
+
+## Problem
+Now let we now assume that probability of success is very small. For example, the probability that your computer will be damaged as a result of coffee spilled on it equal to 0.001.
+Suppose you want to calculate probability of exactly one such computer failure of 800.
+
+## Solution
+```{r}
+# Define a function for Poisson approximation
+approxPoisson = function(k, n, p){
+	if (p>0.5){
+		k = n - k
+		p = 1 - p
+	}
+	res = (n*p)^k/factorial(k)*exp(-n*p)
+	return(res)
+}
+
+n = 800
+p = 0.001
+k = 1
+
+p_Poisson = approxPoisson(k, n, p)
+p_Bernoulli = choose(n,k)*p^k*(1-p)^(n-k)
+```
+Approximate probability (Poisson approximation) = `r p_Poisson` 
+
+Exact probability (Bernoulli formula) = `r p_Bernoulli` 
+
+Compare calculated values: `r all.equal(p_Poisson,p_Bernoulli)`
+
+
+# Accuracy comparison of Poisson and Moive-Laplace approximation
+
+```{r}
+n = 50
+k=seq(from=0, to=n)
+p=0.1
+
+# Calculating probabilities for all k values in [0,50] using the exact Bernoulli formula.
+# Note the "magic" with vector calculation
+pBin = choose(n,k)*p^k*(1-p)^(n-k)
+
+# Calculating probabilities for all k values in [0,50] using the Moivre-Laplace approximation
+pMoivreLaplace = approxMoivreLaplaceLocal (k,n,p)
+
+# Calculating probabilities for all k values in [0,50] using the Poisson approximation
+pPoisson = approxPoisson(k,n,p)
+
+# Plot calculated probabilities
+
+plot(pBin, type="l", ylab="Probability")
+lines(pMoivreLaplace , type="l", col="red")
+lines(pPoisson, type="l", col="blue")
+```
+```{r}
+# Vectors of errors for different probability values
+MoivreLaplaceErrors = c()
+PoissonErrors = c()
+
+# A cycle from 0 to 1 with a step 0.01
+for (p in seq(0,1, by = 0.01)){
+	pBin = dbinom(k,n,p)
+	pMoivreLaplace = approxMoivreLaplaceLocal(k,n,p)
+	pPoisson = approxPoisson(k,n,p)
+	
+	# Fill error vectors with relative squared errors
+	MoivreLaplaceErrors = append(MoivreLaplaceErrors, sum(((pBin-pMoivreLaplace)^2)/pBin))
+	PoissonErrors = append(PoissonErrors, sum(((pBin-pPoisson)^2)/pBin))
+}
+
+# Plot error values
+plot(MoivreLaplaceErrors, type="l", xlab="Probability, %", ylab="Error")
+lines(PoissonErrors, type="l", col="blue")
+```
+
+Make the conclusion about relative accuracy of Poisson and Moive-Laplace approximations!
