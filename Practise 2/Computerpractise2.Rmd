@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 git repository: https://github.com/foxybbb/TSI_Probability-Statistics
 
-### Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
+# Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
 
 ```{r}
 exactProbability = function(k, n, p) {
@@ -47,7 +47,7 @@ approxMoivreLaplaceIntegral = function(k1, k2, n, p){
 
 ```
 
-### Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
+# Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
 ```{r}
 probMin = 0.2
 approxNumberTrialsMax = 20
@@ -67,10 +67,10 @@ chooseAproximation = function (k, n, p)
 chooseAproximation(10, 25, 0.5)
 
 ```
-### Use the developed function to solve all problems from Practice 3 and Practice 4 (include the problem statementsinto the markdown)
+# Use the developed function to solve all problems from Practice 3 and Practice 4 (include the problem statementsinto the markdown)
 
-### Practise 3 
-#### 1. A fair coin is tossed six times, what is the probability of getting four heads?
+# Practise 3 
+## 1. A fair coin is tossed six times, what is the probability of getting four heads?
 
 
 ```{r}
@@ -85,7 +85,7 @@ P(k =`r k`) = `r pr` \\
 P(k > 1) = `r pr`
 $$
 
-#### 2. A die is tossed 10 times. What is the probability of getting four sixes?
+## 2. A die is tossed 10 times. What is the probability of getting four sixes?
 
 ```{r}
 p = 1/6
@@ -98,10 +98,10 @@ $$
 P(k =`r k`) = `r pr`
 $$
 
-#### 3. It is conjectured that an impurity exists in 30% of all drinking wells in a certain rural community. In order to gain some insight into the true extent of the problem, it is determined that some testing is necessary. It is too expensive to test all of the wells in the area, so 10 are randomly selected for testing
+## 3. It is conjectured that an impurity exists in 30% of all drinking wells in a certain rural community. In order to gain some insight into the true extent of the problem, it is determined that some testing is necessary. It is too expensive to test all of the wells in the area, so 10 are randomly selected for testing
 
-##### a) Using the binomial distribution, what is the probability that exactly 3 wells have the impurity, assuming that the conjecture is correct?
-##### b) What is the probability that more than 3 wells are impure?
+### a) Using the binomial distribution, what is the probability that exactly 3 wells have the impurity, assuming that the conjecture is correct?
+### b) What is the probability that more than 3 wells are impure?
 
 ```{r}
 p = 0.3
@@ -121,7 +121,7 @@ a.P(k =`r k`) = `r pr` \\
 b.P(k>`r k`) = `r sum` 
 $$
 
-#### 4. 20% of the items produced by a machine are defective. Four items are chosen at random. Find the probability that none of the chosen items are defective.
+## 4. 20% of the items produced by a machine are defective. Four items are chosen at random. Find the probability that none of the chosen items are defective.
 
 ```{r}
 p = 0.2
@@ -136,7 +136,7 @@ $$
 P(k =`r k`) = `r pr` \\ 
 $$
 
-#### 5. You are taking a 10 question multiple choice test. If each question has four choices and you guess on each question, what is the probability of getting exactly 7 questions correct?
+## 5. You are taking a 10 question multiple choice test. If each question has four choices and you guess on each question, what is the probability of getting exactly 7 questions correct?
 
 ```{r}
 P = 1/4
@@ -149,10 +149,10 @@ pr
 $$
 P(k =`r k`) = `r pr` \\ 
 $$
-#### 6. According to a survey by the Administrative Management Society, one-half of U.S. companies give employees 4 weeks of vacation after they have beenwith the company for 15years. Find the probability that among 6 companies surveyed at random, the number that give employees 4 weeks of vacation after 15 years of employment is
+## 6. According to a survey by the Administrative Management Society, one-half of U.S. companies give employees 4 weeks of vacation after they have beenwith the company for 15years. Find the probability that among 6 companies surveyed at random, the number that give employees 4 weeks of vacation after 15 years of employment is
 
-##### a) anywhere from 2 to 5;
-##### b) fewer than 3.
+### a) anywhere from 2 to 5;
+### b) fewer than 3.
 
 ```{R}
 P = 1/2
@@ -167,7 +167,7 @@ $$
 P( `r k_1 `< k < `r k_2`) = `r pr`  
 $$
 
-#### 7. A basketball player takes three free throws (1 point for each success) and the probability of making each shot is 0.8. Calculate probabilities for all possible numbers of points.
+## 7. A basketball player takes three free throws (1 point for each success) and the probability of making each shot is 0.8. Calculate probabilities for all possible numbers of points.
 
 ```{r}
 p = 0.8
@@ -182,10 +182,80 @@ for(i in 0:k_4){
 }
 
 ```
+## 8. In a game of chess against a particular opponent, the probability that Sean wins is 0.7. He plays 6 games against his opponent. What isthe probability that Sean will
+### a. win exactly four games?
+### b. lose the second game and the 4th game and win the others?
+### c. lose at least four games?
 
-### Practise 4
+```{r}
+p = 0.7
+n = 6
+k_a = 4
+pr_a = chooseAproximation(k_a,n,p)
+pr_b = pr_a / choose(6,4)
+pr_c = 0
+for(i in 0:2){
+  pr_c =+ chooseAproximation(i,n,p)
+}
 
-## Implement the cumulative distribution functions
+
+```
+
+$$
+a.P(k =`r k_a`) = `r pr_a` \\
+b.P = `r pr_b` \\
+c.P(k<2) = `r pr_c` 
+$$
+
+## 9. A team wins a play-off series if it wins more than a half of games. A probability that team A wins one game against team B is 0.4. What is a probability of team A to win a series of 3 games(Bo3)? of 5 games(Bo5)?
+
+```{r}
+p = 0.4
+n_a = 3
+k_a_1 = 2
+k_a_2 = 3
+pr_a = 0
+
+for (i in k_a_1:k_a_2) {
+  pr_a =+ chooseAproximation(i, n, p)
+}
+pr_a
+n_b = 5
+k_b_1 = 3
+k_b_2 = 4
+k_b_3 = 5
+pr_b = 0
+
+for (i in k_b_1:k_b_3) {
+  pr_b =+ chooseAproximation(i, n, p)
+}
+pr_b
+```
+## 10. In each of 4 races, the Democrats have a 60% chance of winning. Assuming that the races are independent of each other, what is the probability that:
+### a. The Democrats will win 0 races, 1 race, 2 races, 3 races, or all 4 races?]
+### b. The Democrats will win at least 1 race
+### c. The Democrats will win a majority of the races
+```{r}
+p=0.6
+n=4
+
+
+for(i in 0:n){
+  cat(sprintf("P(k=%i) = %f\n",i,chooseAproximation(i,n,p)))
+}
+
+pr_b = 1 - chooseAproximation(0,n,p)
+pr_b
+pr_c = 0
+for (i in 3:4){
+  pr_c =+ chooseAproximation(i,n,p)
+}
+pr_c
+```
+
+# Practise 4
+
+# Implement the cumulative distribution functions
 
 $$
     F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
