@@ -227,23 +227,24 @@ pre code {
 <h2>Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVybm91bGxpVHJpYWxDYWxjID0gZnVuY3Rpb24oayxuLHApe1xucmV0dXJuIChkYmlub20oaywgbixwKSlcbn1cbmBgYCJ9 -->
-<pre class="r"><code>bernoulliTrialCalc = function(k,n,p){
-return (dbinom(k, n,p))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVybm91bGxpVHJpYWxDYWxjID0gZnVuY3Rpb24oaywgbiwgcCkge1xuICByZXR1cm4gKGRiaW5vbShrLCBuLCBwKSlcbn1cbmBgYCJ9 -->
+<pre class="r"><code>bernoulliTrialCalc = function(k, n, p) {
+  return (dbinom(k, n, p))
 }</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXBwcm94TW9pdnJlTGFwbGFjZUxvY2FsID0gZnVuY3Rpb24oaywgbiwgcCl7XG5cdHggPSAoayAtIG4qcCkvc3FydChuKnAqKDEtcCkpXG5cdCMgQ2FsbCB0aGUgbm9ybWFsIGRlbnNpdHkgZnVuY3Rpb25cbiAgZmkgPSBkbm9ybSh4KVxuXHQjIEFwcHJveGltYXRlIGNhbGN1bGF0aW9uXG5cdHAgPSBmaS9zcXJ0KG4qcCooMS1wKSlcblx0cmV0dXJuKHApXG59XG5gYGAifQ== -->
-<pre class="r"><code>approxMoivreLaplaceLocal = function(k, n, p){
-    x = (k - n*p)/sqrt(n*p*(1-p))
-    # Call the normal density function
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5hcHByb3hNb2l2cmVMYXBsYWNlTG9jYWwgPSBmdW5jdGlvbihrLCBuLCBwKSB7XG4gIHggPSAoayAtIG4gKiBwKSAvIHNxcnQobiAqIHAgKiAoMSAtIHApKVxuICAjIENhbGwgdGhlIG5vcm1hbCBkZW5zaXR5IGZ1bmN0aW9uXG4gIGZpID0gZG5vcm0oeClcbiAgIyBBcHByb3hpbWF0ZSBjYWxjdWxhdGlvblxuICBwID0gZmkgLyBzcXJ0KG4gKiBwICogKDEgLSBwKSlcbiAgcmV0dXJuKHApXG59XG5gYGAifQ== -->
+<pre class="r"><code>
+approxMoivreLaplaceLocal = function(k, n, p) {
+  x = (k - n * p) / sqrt(n * p * (1 - p))
+  # Call the normal density function
   fi = dnorm(x)
-    # Approximate calculation
-    p = fi/sqrt(n*p*(1-p))
-    return(p)
+  # Approximate calculation
+  p = fi / sqrt(n * p * (1 - p))
+  return(p)
 }</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -253,17 +254,15 @@ return (dbinom(k, n,p))
 <h2>Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvYk1pbiA9IDAuMlxuUHJvYmFiaWxpdHlBcHByb3hpbWF0ZSA9IGZ1bmN0aW9uIChrLG4scClcbntcbiAgaWYobiA+IDIwJiYoKHA8cHJvYk1pbil8fDEtcDxwcm9iTWluKSl7XG4gICAgXG4gICAgcmV0dXJuIChhcHByb3hNb2l2cmVMYXBsYWNlTG9jYWwoayxuLHApKVxuICB9XG4gIGVsc2V7XG4gICAgcHJpbnQoXCJiZXJuXCIpXG4gICAgcmV0dXJuIChiZXJub3VsbGlUcmlhbENhbGMoayxuLHApKVxuICB9XG59XG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvYk1pbiA9IDAuMlxuY2hvb3NlQXByb3hpbWF0aW9uID0gZnVuY3Rpb24gKGssIG4sIHApXG57XG4gIGlmIChuID4gMjAgJiYgKChwIDwgcHJvYk1pbikgfHwgMSAtIHAgPCBwcm9iTWluKSkge1xuICAgIHJldHVybiAoYXBwcm94TW9pdnJlTGFwbGFjZUxvY2FsKGssIG4sIHApKVxuICB9XG4gIGVsc2V7XG4gICAgcmV0dXJuIChiZXJub3VsbGlUcmlhbENhbGMoaywgbiwgcCkpXG4gIH1cbn1cbmBgYCJ9 -->
 <pre class="r"><code>probMin = 0.2
-ProbabilityApproximate = function (k,n,p)
+chooseAproximation = function (k, n, p)
 {
-  if(n &gt; 20&amp;&amp;((p&lt;probMin)||1-p&lt;probMin)){
-    
-    return (approxMoivreLaplaceLocal(k,n,p))
+  if (n &gt; 20 &amp;&amp; ((p &lt; probMin) || 1 - p &lt; probMin)) {
+    return (approxMoivreLaplaceLocal(k, n, p))
   }
   else{
-    print(&quot;bern&quot;)
-    return (bernoulliTrialCalc(k,n,p))
+    return (bernoulliTrialCalc(k, n, p))
   }
 }</code></pre>
 <!-- rnb-source-end -->
@@ -271,12 +270,11 @@ ProbabilityApproximate = function (k,n,p)
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUHJvYmFiaWxpdHlBcHByb3hpbWF0ZSgxMCwyNSwwLjUpXG5gYGAifQ== -->
-<pre class="r"><code>ProbabilityApproximate(10,25,0.5)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2hvb3NlQXByb3hpbWF0aW9uKDEwLCAyNSwgMC41KVxuYGBgIn0= -->
+<pre class="r"><code>chooseAproximation(10, 25, 0.5)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiYmVyblwiXG5bMV0gMC4wOTc0MTY2NFxuIn0= -->
-<pre><code>[1] &quot;bern&quot;
-[1] 0.09741664</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDk3NDE2NjRcbiJ9 -->
+<pre><code>[1] 0.09741664</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -285,6 +283,20 @@ ProbabilityApproximate = function (k,n,p)
 <h2>Use the developed function to solve all problems from Practice 3 and Practice 4 (include the problem statementsinto the markdown)</h2>
 <div id="practise-3" class="section level3">
 <h3>Practise 3</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucCA9IDAuNVxubiA9IDZcbmsgPSA0XG5wciA8LSBiZXJub3VsbGlUcmlhbENhbGMoayxuLHApXG5wcmludChwcilcbmBgYCJ9 -->
+<pre class="r"><code>p = 0.5
+n = 6
+k = 4
+pr &lt;- bernoulliTrialCalc(k,n,p)
+print(pr)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMjM0Mzc1XG4ifQ== -->
+<pre><code>[1] 0.234375</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="practise-4" class="section level3">
 <h3>Practise 4</h3>
@@ -299,6 +311,14 @@ ProbabilityApproximate = function (k,n,p)
 \]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NvbXVsYXRpdmVCaW5vbWFsRGlzdHJpYkNhbGMgPSBmdW5jdGlvbihrLG4scCl7XG5cbiAgXG4jfVxuICBcblxuYGBgIn0= -->
+<pre class="r"><code>#comulativeBinomalDistribCalc = function(k,n,p){
+
+  
+#}
+  
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>$$ <span class="math display">\[\begin{equation*}
@@ -307,6 +327,12 @@ ProbabilityApproximate = function (k,n,p)
 <p>$$</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NvbXVsYXRpdmVOb3JtYWxEaXN0cmliQ2FsYyA9IGZ1bmN0aW9uKGssbixwKXtcbiAjIHBub3JtKClcbiN9XG5cbmBgYCJ9 -->
+<pre class="r"><code>#comulativeNormalDistribCalc = function(k,n,p){
+ # pnorm()
+#}
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -318,7 +344,7 @@ ProbabilityApproximate = function (k,n,p)
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFwcHJveGltYXRpb24gb2YgdGhlIEJpbm9taWFsIHByb2JhYmlsaXRpZXMgaW4gUiINCmF1dGhvcjogIkl2YW4gR2VyY2V2Ig0KZGF0ZTogIjA2IEFwcmlsIDIwMjEiDQpzdWJ0aXRsZTogIkNPTVBVVEVSIFBSQUNUSUNFIDIiDQpvdXRwdXQ6IA0KICBwZGZfZG9jdW1lbnQ6IGRlZmF1bHQNCiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdA0KLS0tDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkNCmBgYA0KDQpnaXQgcmVwb3NpdG9yeTogaHR0cHM6Ly9naXRodWIuY29tL2ZveHliYmIvVFNJX1Byb2JhYmlsaXR5LVN0YXRpc3RpY3MNCg0KIyMgSW5jbHVkZSBmdW5jdGlvbnMgZm9yIEJlcm5vdWxsaSBmb3JtdWxhIGFuZCBOb3JtYWwgYW5kIFBvaXNzb24gYXBwcm94aW1hdGlvbiBmcm9tIGxlYXJuaW5nLWJ5LWRvaW5nIG1hdGVyaWFscyAwMy4NCg0KYGBge3J9DQpiZXJub3VsbGlUcmlhbENhbGMgPSBmdW5jdGlvbihrLG4scCl7DQpyZXR1cm4gKGRiaW5vbShrLCBuLHApKQ0KfQ0KYGBgDQoNCg0KYGBge3J9DQphcHByb3hNb2l2cmVMYXBsYWNlTG9jYWwgPSBmdW5jdGlvbihrLCBuLCBwKXsNCgl4ID0gKGsgLSBuKnApL3NxcnQobipwKigxLXApKQ0KCSMgQ2FsbCB0aGUgbm9ybWFsIGRlbnNpdHkgZnVuY3Rpb24NCiAgZmkgPSBkbm9ybSh4KQ0KCSMgQXBwcm94aW1hdGUgY2FsY3VsYXRpb24NCglwID0gZmkvc3FydChuKnAqKDEtcCkpDQoJcmV0dXJuKHApDQp9DQpgYGANCg0KIyMgRGVmaW5lIGEgZnVuY3Rpb24sIHdoaWNoIGltcGxlbWVudHMgcHJvcGVyIGZvcm11bGEgc2VsZWN0aW9uLCBmb2xsb3dpbmcgdGhlIGxhc3QgZGlhZ3JhbSBpbiBUb3BpYyAxLjUgbGVjdHVyZSBzbGlkZXMuDQpgYGB7cn0NCnByb2JNaW4gPSAwLjINClByb2JhYmlsaXR5QXBwcm94aW1hdGUgPSBmdW5jdGlvbiAoayxuLHApDQp7DQogIGlmKG4gPiAyMCYmKChwPHByb2JNaW4pfHwxLXA8cHJvYk1pbikpew0KICAgIHJldHVybiAoYXBwcm94TW9pdnJlTGFwbGFjZUxvY2FsKGssbixwKSkNCiAgfQ0KICBlbHNlew0KICAgIHJldHVybiAoYmVybm91bGxpVHJpYWxDYWxjKGssbixwKSkNCiAgfQ0KfQ0KYGBgDQoNCg0KYGBge3J9DQpQcm9iYWJpbGl0eUFwcHJveGltYXRlKDEwLDI1LDAuNSkNCg0KYGBgDQojIyBVc2UgdGhlIGRldmVsb3BlZCBmdW5jdGlvbiB0byBzb2x2ZSBhbGwgcHJvYmxlbXMgZnJvbSBQcmFjdGljZSAzIGFuZCBQcmFjdGljZSA0IChpbmNsdWRlIHRoZSBwcm9ibGVtIHN0YXRlbWVudHNpbnRvIHRoZSBtYXJrZG93bikNCg0KIyMjIFByYWN0aXNlIDMgDQoNCiMjIyBQcmFjdGlzZSA0DQoNCiMjIEltcGxlbWVudCB0aGUgY3VtdWxhdGl2ZSBkaXN0cmlidXRpb24gZnVuY3Rpb25zDQoNCiQkDQogIFxiZWdpbntlcXVhdGlvbip9DQogICAgRl97Ymlub219KGssbixwKT0gUFx7SyBcbGVxIGtcfSA9IFxzdW1fe2k9MH1eayBDX25eaSBwXmkoMS1wKV57bi1pfSANCiAgXGVuZHtlcXVhdGlvbip9ICAgICANCiQkDQpgYGB7cn0NCmBgYA0KDQoNCiQkDQogIFxiZWdpbntlcXVhdGlvbip9DQogICAgRl97bm9ybWFsfShrLG4scCk9IFxwaGkgXGxlZnQoIFxmcmFje2stbnB9e1xzcXJ0e25wKDEtcCl9fSBccmlnaHQpDQogIFxlbmR7ZXF1YXRpb24qfSAgDQoNCiQkDQoNCg0KYGBge3J9DQoNCmBgYA0KIyMgSW1wbGVtZW50IGEgZnVuY3Rpb24gZm9yIGNhbGN1bGF0aW5nIHRoZSBhcHByb3hpbWF0aW9uIGFjY3VyYWN5IG1ldHJpYyBhcw0KJCQNCiAgRChuLHApID0gbWF4fEZfe25vcm1hbH0oayxuLHApIC0gRl97Ymlub219KGssbixwKXwgDQokJA0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFwcHJveGltYXRpb24gb2YgdGhlIEJpbm9taWFsIHByb2JhYmlsaXRpZXMgaW4gUiINCmF1dGhvcjogIkl2YW4gR2VyY2V2Ig0KZGF0ZTogIjA2IEFwcmlsIDIwMjEiDQpvdXRwdXQ6DQogIGh0bWxfZG9jdW1lbnQ6DQogICAgZGZfcHJpbnQ6IHBhZ2VkDQogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQNCiAgcGRmX2RvY3VtZW50OiBkZWZhdWx0DQpzdWJ0aXRsZTogQ09NUFVURVIgUFJBQ1RJQ0UgMg0KLS0tDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkNCmBgYA0KDQpnaXQgcmVwb3NpdG9yeTogaHR0cHM6Ly9naXRodWIuY29tL2ZveHliYmIvVFNJX1Byb2JhYmlsaXR5LVN0YXRpc3RpY3MNCg0KIyMgSW5jbHVkZSBmdW5jdGlvbnMgZm9yIEJlcm5vdWxsaSBmb3JtdWxhIGFuZCBOb3JtYWwgYW5kIFBvaXNzb24gYXBwcm94aW1hdGlvbiBmcm9tIGxlYXJuaW5nLWJ5LWRvaW5nIG1hdGVyaWFscyAwMy4NCg0KYGBge3J9DQpiZXJub3VsbGlUcmlhbENhbGMgPSBmdW5jdGlvbihrLCBuLCBwKSB7DQogIHJldHVybiAoZGJpbm9tKGssIG4sIHApKQ0KfQ0KYGBgDQoNCg0KYGBge3J9DQphcHByb3hNb2l2cmVMYXBsYWNlTG9jYWwgPSBmdW5jdGlvbihrLCBuLCBwKSB7DQogIHggPSAoayAtIG4gKiBwKSAvIHNxcnQobiAqIHAgKiAoMSAtIHApKQ0KICAjIENhbGwgdGhlIG5vcm1hbCBkZW5zaXR5IGZ1bmN0aW9uDQogIGZpID0gZG5vcm0oeCkNCiAgIyBBcHByb3hpbWF0ZSBjYWxjdWxhdGlvbg0KICBwID0gZmkgLyBzcXJ0KG4gKiBwICogKDEgLSBwKSkNCiAgcmV0dXJuKHApDQp9DQpgYGANCg0KIyMgRGVmaW5lIGEgZnVuY3Rpb24sIHdoaWNoIGltcGxlbWVudHMgcHJvcGVyIGZvcm11bGEgc2VsZWN0aW9uLCBmb2xsb3dpbmcgdGhlIGxhc3QgZGlhZ3JhbSBpbiBUb3BpYyAxLjUgbGVjdHVyZSBzbGlkZXMuDQpgYGB7cn0NCnByb2JNaW4gPSAwLjINCmNob29zZUFwcm94aW1hdGlvbiA9IGZ1bmN0aW9uIChrLCBuLCBwKQ0Kew0KICBpZiAobiA+IDIwICYmICgocCA8IHByb2JNaW4pIHx8IDEgLSBwIDwgcHJvYk1pbikpIHsNCiAgICByZXR1cm4gKGFwcHJveE1vaXZyZUxhcGxhY2VMb2NhbChrLCBuLCBwKSkNCiAgfQ0KICBlbHNlew0KICAgIHJldHVybiAoYmVybm91bGxpVHJpYWxDYWxjKGssIG4sIHApKQ0KICB9DQp9DQpgYGANCg0KDQpgYGB7cn0NCmNob29zZUFwcm94aW1hdGlvbigxMCwgMjUsIDAuNSkNCg0KYGBgDQojIyBVc2UgdGhlIGRldmVsb3BlZCBmdW5jdGlvbiB0byBzb2x2ZSBhbGwgcHJvYmxlbXMgZnJvbSBQcmFjdGljZSAzIGFuZCBQcmFjdGljZSA0IChpbmNsdWRlIHRoZSBwcm9ibGVtIHN0YXRlbWVudHNpbnRvIHRoZSBtYXJrZG93bikNCg0KIyMjIFByYWN0aXNlIDMgDQoNCmBgYHtyfQ0KcCA9IDAuNQ0KbiA9IDYNCmsgPSA0DQpwciA8LSBiZXJub3VsbGlUcmlhbENhbGMoayxuLHApDQpwcmludChwciwgdXNlU291cmNlID0gVFJVRSkNCmBgYA0KDQojIyMgUHJhY3Rpc2UgNA0KDQojIyBJbXBsZW1lbnQgdGhlIGN1bXVsYXRpdmUgZGlzdHJpYnV0aW9uIGZ1bmN0aW9ucw0KDQokJA0KICBcYmVnaW57ZXF1YXRpb24qfQ0KICAgIEZfe2Jpbm9tfShrLG4scCk9IFBce0sgXGxlcSBrXH0gPSBcc3VtX3tpPTB9XmsgQ19uXmkgcF5pKDEtcClee24taX0gDQogIFxlbmR7ZXF1YXRpb24qfSAgICAgDQokJA0KYGBge3J9DQojY29tdWxhdGl2ZUJpbm9tYWxEaXN0cmliQ2FsYyA9IGZ1bmN0aW9uKGssbixwKXsNCg0KICANCiN9DQogIA0KDQpgYGANCg0KDQokJA0KICBcYmVnaW57ZXF1YXRpb24qfQ0KICAgIEZfe25vcm1hbH0oayxuLHApPSBccGhpIFxsZWZ0KCBcZnJhY3trLW5wfXtcc3FydHtucCgxLXApfX0gXHJpZ2h0KQ0KICBcZW5ke2VxdWF0aW9uKn0gIA0KDQokJA0KDQoNCmBgYHtyfQ0KI2NvbXVsYXRpdmVOb3JtYWxEaXN0cmliQ2FsYyA9IGZ1bmN0aW9uKGssbixwKXsNCiAjIHBub3JtKCkNCiN9DQoNCmBgYA0KIyMgSW1wbGVtZW50IGEgZnVuY3Rpb24gZm9yIGNhbGN1bGF0aW5nIHRoZSBhcHByb3hpbWF0aW9uIGFjY3VyYWN5IG1ldHJpYyBhcw0KJCQNCiAgRChuLHApID0gbWF4fEZfe25vcm1hbH0oayxuLHApIC0gRl97Ymlub219KGssbixwKXwgDQokJA0K</div>
 
 
 

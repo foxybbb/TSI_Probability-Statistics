@@ -127,21 +127,21 @@ Poisson approximation from learning-by-doing materials
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{bernoulliTrialCalc }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(k,n.p)\{}
-\FunctionTok{return}\NormalTok{ (}\FunctionTok{dbinom}\NormalTok{(k, n,p))}
+\NormalTok{bernoulliTrialCalc }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(k, n, p) \{}
+  \FunctionTok{return}\NormalTok{ (}\FunctionTok{dbinom}\NormalTok{(k, n, p))}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{approxMoivreLaplaceLocal }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(k, n, p)\{}
-\NormalTok{    x }\OtherTok{=}\NormalTok{ (k }\SpecialCharTok{{-}}\NormalTok{ n}\SpecialCharTok{*}\NormalTok{p)}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{p}\SpecialCharTok{*}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{p))}
-    \CommentTok{\# Call the normal density function}
+\NormalTok{approxMoivreLaplaceLocal }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(k, n, p) \{}
+\NormalTok{  x }\OtherTok{=}\NormalTok{ (k }\SpecialCharTok{{-}}\NormalTok{ n }\SpecialCharTok{*}\NormalTok{ p) }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ p }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p))}
+  \CommentTok{\# Call the normal density function}
 \NormalTok{  fi }\OtherTok{=} \FunctionTok{dnorm}\NormalTok{(x)}
-    \CommentTok{\# Approximate calculation}
-\NormalTok{    p }\OtherTok{=}\NormalTok{ fi}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{p}\SpecialCharTok{*}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{p))}
-    \FunctionTok{return}\NormalTok{(p)}
+  \CommentTok{\# Approximate calculation}
+\NormalTok{  p }\OtherTok{=}\NormalTok{ fi }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ p }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p))}
+  \FunctionTok{return}\NormalTok{(p)}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
@@ -153,17 +153,94 @@ slides.}\label{define-a-function-which-implements-proper-formula-selection-follo
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{ProbabilityApproximate }\OtherTok{=} \ControlFlowTok{function}\NormalTok{ (k,n,p)}
+\NormalTok{probMin }\OtherTok{=} \FloatTok{0.2}
+\NormalTok{chooseAproximation }\OtherTok{=} \ControlFlowTok{function}\NormalTok{ (k, n, p)}
 \NormalTok{\{}
-  \ControlFlowTok{if}\NormalTok{(n }\SpecialCharTok{\textgreater{}} \DecValTok{20}\NormalTok{)\{}
-    \FunctionTok{return}\NormalTok{ (}\FunctionTok{approxMoivreLaplaceLocal}\NormalTok{(k,n,p))}
+  \ControlFlowTok{if}\NormalTok{ (n }\SpecialCharTok{\textgreater{}} \DecValTok{20} \SpecialCharTok{\&\&}\NormalTok{ ((p }\SpecialCharTok{\textless{}}\NormalTok{ probMin) }\SpecialCharTok{||} \DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p }\SpecialCharTok{\textless{}}\NormalTok{ probMin)) \{}
+    \FunctionTok{return}\NormalTok{ (}\FunctionTok{approxMoivreLaplaceLocal}\NormalTok{(k, n, p))}
 \NormalTok{  \}}
   \ControlFlowTok{else}\NormalTok{\{}
-    \FunctionTok{return}\NormalTok{ (}\FunctionTok{bernoulliTrialCalc}\NormalTok{(k,n,p))}
+    \FunctionTok{return}\NormalTok{ (}\FunctionTok{bernoulliTrialCalc}\NormalTok{(k, n, p))}
 \NormalTok{  \}}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{chooseAproximation}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{25}\NormalTok{, }\FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.09741664
+\end{verbatim}
+
+\hypertarget{use-the-developed-function-to-solve-all-problems-from-practice-3-and-practice-4-include-the-problem-statementsinto-the-markdown}{%
+\subsection{Use the developed function to solve all problems from
+Practice 3 and Practice 4 (include the problem statementsinto the
+markdown)}\label{use-the-developed-function-to-solve-all-problems-from-practice-3-and-practice-4-include-the-problem-statementsinto-the-markdown}}
+
+\hypertarget{practise-3}{%
+\subsubsection{Practise 3}\label{practise-3}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p }\OtherTok{=} \FloatTok{0.5}
+\NormalTok{n }\OtherTok{=} \DecValTok{6}
+\NormalTok{k }\OtherTok{=} \DecValTok{4}
+\NormalTok{pr }\OtherTok{\textless{}{-}} \FunctionTok{bernoulliTrialCalc}\NormalTok{(k,n,p)}
+\FunctionTok{print}\NormalTok{(pr, }\AttributeTok{useSource =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.234375
+\end{verbatim}
+
+\hypertarget{practise-4}{%
+\subsubsection{Practise 4}\label{practise-4}}
+
+\hypertarget{implement-the-cumulative-distribution-functions}{%
+\subsection{Implement the cumulative distribution
+functions}\label{implement-the-cumulative-distribution-functions}}
+
+\[
+  \begin{equation*}
+    F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
+  \end{equation*}     
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#comulativeBinomalDistribCalc = function(k,n,p)\{}
+
+  
+\CommentTok{\#\}}
+\end{Highlighting}
+\end{Shaded}
+
+\$\$ \begin{equation*}
+    F_{normal}(k,n,p)= \phi \left( \frac{k-np}{\sqrt{np(1-p)}} \right)
+  \end{equation*}
+
+\$\$
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#comulativeNormalDistribCalc = function(k,n,p)\{}
+ \CommentTok{\# pnorm()}
+\CommentTok{\#\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{implement-a-function-for-calculating-the-approximation-accuracy-metric-as}{%
+\subsection{Implement a function for calculating the approximation
+accuracy metric
+as}\label{implement-a-function-for-calculating-the-approximation-accuracy-metric-as}}
+
+\[
+  D(n,p) = max|F_{normal}(k,n,p) - F_{binom}(k,n,p)| 
+\]
 
 \end{document}

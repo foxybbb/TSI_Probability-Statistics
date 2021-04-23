@@ -54,21 +54,22 @@ What is the probability that exactly 85 computer failures?
 ## Solution
 ```{r}
 # Define a function for Moivre-Laplace (normal) approximation
-approxMoivreLaplaceLocal = function(k, n, p){
-	x = (k - n*p)/sqrt(n*p*(1-p))
-	# Call the normal density function
+approxMoivreLaplaceLocal = function(k, n, p) {
+  x = (k - n * p) / sqrt(n * p * (1 - p))
+  # Call the normal density function
   fi = dnorm(x)
-	# Approximate calculation
-	p = fi/sqrt(n*p*(1-p))
-	return(p)
+  # Approximate calculation
+  p = fi / sqrt(n * p * (1 - p))
+  return(p)
 }
 
 n = 800
 p = 0.1
 k = 85
 
+
 p_ML = approxMoivreLaplaceLocal(k, n, p)
-p_Bernoulli = choose(n,k)*p^k*(1-p)^(n-k)
+p_Bernoulli = choose(n, k) * p ^ k * (1 - p) ^ (n - k)
 ```
 Approximate probability (Moivre-Laplace approximation) = `r p_ML` 
 

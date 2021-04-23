@@ -1,0 +1,138 @@
+---
+title: "Approximation of the Binomial probabilities in R"
+author: "Ivan Gercev"
+date: "06 April 2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
+subtitle: COMPUTER PRACTICE 2
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+git repository: https://github.com/foxybbb/TSI_Probability-Statistics
+
+### Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
+
+```{r}
+bernoulliTrialCalc = function(k, n, p) {
+  return (dbinom(k, n, p))
+}
+```
+
+
+```{r}
+approxMoivreLaplaceLocal = function(k, n, p) {
+  x = (k - n * p) / sqrt(n * p * (1 - p))
+  # Call the normal density function
+  fi = dnorm(x)
+  # Approximate calculation
+  p = fi / sqrt(n * p * (1 - p))
+  return(p)
+}
+```
+
+### Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
+```{r}
+probMin = 0.2
+approxNumberTrialsMax = 20
+chooseAproximation = function (k, n, p)
+{
+  if (n > approxNumberTrialsMax && ((p < probMin) || 1 - p < probMin)) {
+    return (approxMoivreLaplaceLocal(k, n, p))
+  }
+  else{
+    return (bernoulliTrialCalc(k, n, p))
+  }
+}
+```
+
+
+```{r}
+chooseAproximation(10, 25, 0.5)
+
+```
+### Use the developed function to solve all problems from Practice 3 and Practice 4 (include the problem statementsinto the markdown)
+
+### Practise 3 
+#### 1. A fair coin is tossed six times, what is the probability of getting four heads?
+
+
+```{r}
+p = 0.5
+n = 6
+k = 4
+pr <- bernoulliTrialCalc(k,n,p)  #k = 3
+
+```
+$$
+P(k =`r k`) = `r pr` \\
+P(k > 1) = `r pr`
+$$
+
+#### 2. A die is tossed 10 times. What is the probability of getting four sixes?
+```{r}
+p = 1/6
+n = 10
+k = 4
+pr <- bernoulliTrialCalc(k,n,p) # k = 4 
+```
+
+$$
+P(k =`r k`) = `r pr`
+$$
+#### 3. It is conjectured that an impurity exists in 30% of all drinking wells in a certain rural community. In order to gain some insight into the true extent of the problem, it is determined that some testing is necessary. It is too expensive to test all of the wells in the area, so 10 are randomly selected for testing
+
+##### a) Using the binomial distribution, what is the probability that exactly 3 wells have the impurity, assuming that the conjecture is correct?
+##### b) What is the probability that more than 3 wells are impure?
+
+```{r}
+p = 0.3
+n = 10
+k = 3
+pr <- bernoulliTrialCalc(k,n,p) # k = 3
+
+for(i in k){
+  1 - bernoulliTrialCalc()
+}
+```
+
+$$
+P(k =`r k`) = `r pr`
+$$
+
+### Practise 4
+
+## Implement the cumulative distribution functions
+
+$$
+    F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
+$$
+```{r}
+#comulativeBinomalDistribCalc = function(k,n,p){
+
+  
+#}
+  
+
+```
+
+
+$$
+    F_{normal}(k,n,p)= \phi \left( \frac{k-np}{\sqrt{np(1-p)}} \right)
+$$
+
+
+```{r}
+#comulativeNormalDistribCalc = function(k,n,p){
+ # pnorm()
+#}
+
+```
+## Implement a function for calculating the approximation accuracy metric as
+$$
+  D(n,p) = max|F_{normal}(k,n,p) - F_{binom}(k,n,p)| 
+$$
