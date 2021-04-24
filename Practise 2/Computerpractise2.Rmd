@@ -36,28 +36,40 @@ approxMoivreLaplaceLocal = function(k, n, p) {
 ```
 
 ```{r}
-approxMoivreLaplaceIntegral = function(k1, k2, n, p){
-	x1 = (k1 - n*p)/sqrt(n*p*(1-p))
-	x2 = (k2 - n*p)/sqrt(n*p*(1-p))
-	Fi1 = pnorm(x1)
-	Fi2 = pnorm(x2)
-	p = Fi2-Fi1
-	return (p)
+approxMoivreLaplaceIntegral = function(k1, k2, n, p) {
+  x1 = (k1 - n * p) / sqrt(n * p * (1 - p))
+  x2 = (k2 - n * p) / sqrt(n * p * (1 - p))
+  Fi1 = pnorm(x1)
+  Fi2 = pnorm(x2)
+  p = Fi2 - Fi1
+  return (p)
 }
+```
 
+```{r}
+approxPoisson = function(k, n, p){
+	if (p>0.5){
+		k = n - k
+		p = 1 - p
+	}
+	res = (n*p)^k/factorial(k)*exp(-n*p)
+	return(res)
+}
 ```
 
 # Define a function, which implements proper formula selection, following the last diagram in Topic 1.5 lecture slides.
 ```{r}
 probMin = 0.2
 approxNumberTrialsMax = 20
-chooseAproximation = function (k, n, p)
-{
-  if (n > approxNumberTrialsMax && ((p < probMin) || 1 - p < probMin)) {
+chooseAproximation = function (k, n, p) {
+  if (n < approxNumberTrialsMax) {
+    return (exactProbability(k, n, p))
+  }
+  else if (n >= approxNumberTrialsMax && (p * n) >= 9) {
     return (approxMoivreLaplaceLocal(k, n, p))
   }
-  else{
-    return (exactProbability(k, n, p))
+  else if (n >= 20 && (p * n) < 9) {
+    return (approxPoisson(k, n, p))
   }
 }
 ```
@@ -74,11 +86,11 @@ chooseAproximation(10, 25, 0.5)
 
 
 ```{r}
-p = 0.5
+p = 1/2
 n = 6
 k = 4
 pr <- chooseAproximation(k,n,p)  #k = 3
-
+pr
 ```
 $$
 P(k =`r k`) = `r pr` \\
@@ -92,6 +104,7 @@ p = 1/6
 n = 10
 k = 4
 pr <- chooseAproximation(k,n,p) # k = 4 
+pr
 ```
 
 $$
@@ -101,24 +114,29 @@ $$
 ## 3. It is conjectured that an impurity exists in 30% of all drinking wells in a certain rural community. In order to gain some insight into the true extent of the problem, it is determined that some testing is necessary. It is too expensive to test all of the wells in the area, so 10 are randomly selected for testing
 
 ### a) Using the binomial distribution, what is the probability that exactly 3 wells have the impurity, assuming that the conjecture is correct?
-### b) What is the probability that more than 3 wells are impure?
-
 ```{r}
 p = 0.3
 n = 10
 k = 3
-pr <- chooseAproximation(k,n,p) # k = 3
-sum = 0
+pr <- chooseAproximation(k, n, p) # k = 3
+pr
+```
+$$
+P(k =`r k`) = `r pr` 
+$$
+
+### b) What is the probability that more than 3 wells are impure?
+
+```{r}
+pr = 0
 for(i in 0:k){
-  sum =+ chooseAproximation(k,n,p)
+  pr = pr + chooseAproximation(i,n,p)
 }
-sum = 1 - sum
+pr
 ```
 
-
 $$
-a.P(k =`r k`) = `r pr` \\
-b.P(k>`r k`) = `r sum` 
+P(k 	\geq `r k`) = `r pr` 
 $$
 
 ## 4. 20% of the items produced by a machine are defective. Four items are chosen at random. Find the probability that none of the chosen items are defective.
@@ -127,7 +145,7 @@ $$
 p = 0.2
 k = 0
 n = 4
-pr <- chooseAproximation(k,n,p)
+pr <- chooseAproximation(k, n, p)
 pr
 ```
 
@@ -139,32 +157,40 @@ $$
 ## 5. You are taking a 10 question multiple choice test. If each question has four choices and you guess on each question, what is the probability of getting exactly 7 questions correct?
 
 ```{r}
-P = 1/4
+p = 1 / 4
 k = 7
-n= 10
-pr <- chooseAproximation(k,n,p)
+n = 10
+pr <- chooseAproximation(k, n, p)
 pr
 ```
 
 $$
-P(k =`r k`) = `r pr` \\ 
+P(k =`r k`) = `r pr`
 $$
 ## 6. According to a survey by the Administrative Management Society, one-half of U.S. companies give employees 4 weeks of vacation after they have beenwith the company for 15years. Find the probability that among 6 companies surveyed at random, the number that give employees 4 weeks of vacation after 15 years of employment is
 
 ### a) anywhere from 2 to 5;
+```{r}
+p = 1 / 2
+n = 6
+pr = 1 - chooseAproximation(6, n, p) - chooseAproximation(1 , n, p)
+pr
+```
+$$
+P = `r pr`  
+$$
 ### b) fewer than 3.
 
 ```{R}
-P = 1/2
-k_1 = 2
-k_2 = 5
-n = 6
-pr <- approxMoivreLaplaceIntegral(k_1,k_2,n,p)
+pr = 0
+for(i in 0:2){
+  pr = pr +chooseAproximation(i,n,p)
+}
 pr
 ```
 
 $$
-P( `r k_1 `< k < `r k_2`) = `r pr`  
+P( `r 0 `\leq k \leq `r 2`) = `r pr`  
 $$
 
 ## 7. A basketball player takes three free throws (1 point for each success) and the probability of making each shot is 0.8. Calculate probabilities for all possible numbers of points.
@@ -177,64 +203,86 @@ k_3 = 2
 k_4 = 3
 n = 3
 pr = c()
-for(i in 0:k_4){
-  cat(sprintf("P(k=%i) = %f\n",i,chooseAproximation(i,n,p)))
+for (i in 0:k_4) {
+  cat(sprintf("P(k=%i) = %f\n", i, chooseAproximation(i, n, p)))
 }
 
 ```
+
+$$
+P( `r 0 ` \leq k \leq `r k_4`) = `r pr`  
+$$
+
 ## 8. In a game of chess against a particular opponent, the probability that Sean wins is 0.7. He plays 6 games against his opponent. What isthe probability that Sean will
 ### a. win exactly four games?
-### b. lose the second game and the 4th game and win the others?
-### c. lose at least four games?
 
 ```{r}
 p = 0.7
 n = 6
-k_a = 4
-pr_a = chooseAproximation(k_a,n,p)
-pr_b = pr_a / choose(6,4)
-pr_c = 0
-for(i in 0:2){
-  pr_c =+ chooseAproximation(i,n,p)
+k = 4
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+P(k =`r k`) = `r pr` \\
+$$
+### b. lose the second game and the 4th game and win the others?
+```{r}
+pr = 0.7 * 0.3 * 0.7 * 0.3 * 0.7 * 0.7
+pr
+```
+$$
+P = `r pr` 
+$$
+### c. lose at least four games?
+
+```{r}
+pr = 0
+for (i in 0:2) {
+  pr = pr + chooseAproximation(i, n, p)
 }
-
-
+pr
 ```
 
 $$
-a.P(k =`r k_a`) = `r pr_a` \\
-b.P = `r pr_b` \\
-c.P(k<2) = `r pr_c` 
+P = `r pr` 
 $$
 
-## 9. A team wins a play-off series if it wins more than a half of games. A probability that team A wins one game against team B is 0.4. What is a probability of team A to win a series of 3 games(Bo3)? of 5 games(Bo5)?
+## 9. A team wins a play-off series if it wins more than a half of games. A probability that team A wins one game against team B is 0.4. What is a probability of team A to win a series of 3 games(Bo3)? 
 
 ```{r}
 p = 0.4
-n_a = 3
+n = 3
 k_a_1 = 2
 k_a_2 = 3
 pr_a = 0
 
-for (i in k_a_1:k_a_2) {
-  pr_a =+ chooseAproximation(i, n, p)
+for (i in 2:3) {
+  pr_a = pr_a + chooseAproximation(i, n, p)
 }
 pr_a
-n_b = 5
-k_b_1 = 3
-k_b_2 = 4
-k_b_3 = 5
-pr_b = 0
 
-for (i in k_b_1:k_b_3) {
-  pr_b =+ chooseAproximation(i, n, p)
-}
-pr_b
 ```
+$$
+P = `r pr` 
+$$
+### of 5 games(Bo5)?
+```{r}
+n = 3
+pr = 0
+for (i in 3:5) {
+  pr = pr + chooseAproximation(i, n, p)
+}
+pr
+```
+
+$$
+P = `r pr` 
+$$
+
+
 ## 10. In each of 4 races, the Democrats have a 60% chance of winning. Assuming that the races are independent of each other, what is the probability that:
-### a. The Democrats will win 0 races, 1 race, 2 races, 3 races, or all 4 races?]
-### b. The Democrats will win at least 1 race
-### c. The Democrats will win a majority of the races
+### a. The Democrats will win 0 races, 1 race, 2 races, 3 races, or all 4 races?
 ```{r}
 p=0.6
 n=4
@@ -244,30 +292,282 @@ for(i in 0:n){
   cat(sprintf("P(k=%i) = %f\n",i,chooseAproximation(i,n,p)))
 }
 
-pr_b = 1 - chooseAproximation(0,n,p)
-pr_b
-pr_c = 0
+```
+### b. The Democrats will win at least 1 race
+```{r}
+pr = 1 - chooseAproximation(0,4,0.6)
+pr
+```
+$$
+P = `r pr` 
+$$
+
+### c. The Democrats will win a majority of the races
+```{r}
+pr = 0
 for (i in 3:4){
-  pr_c =+ chooseAproximation(i,n,p)
+  pr = pr + chooseAproximation(i,n,p)
 }
-pr_c
+pr
+```
+$$
+P = `r pr` 
+$$
+
+## Practise 4
+
+
+## 1.A process yields 10% defective items. If 100 items are randomly selected from the process, what is the probability that the number of defectives
+### a) exceeds 13?
+```{r}
+p = 0.1
+n = 100
+k = 13
+k_1 = 13
+k_2 = 100
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
 ```
 
-# Practise 4
+$$
+  P(`r k` \leq k \leq 100) = `r pr`
+$$
+### b is less than 8?
+```{r}
+k = 8
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+###c) be exactly 12?
+```{r}
+k = 12
+pr = chooseAproximation(k,n,p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
 
+## 2.The probability that a patient recovers from a rare blood disease is 0.4. If 100 people are known to have contracted this disease, what is the probability that fewer than 30 survive?
+```{r}
+p =0.4
+n = 100
+k_1 = 0
+k_2 = 29
+pr = approxMoivreLaplaceIntegral(k_1,k_2,n,p)
+pr
+
+```
+
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+## 3.Statistics released by the National Highway Traffic Safety Administration and the National Safety Council show that on an average weekend night, 1 out of every 10 drivers on the road is drunk. If 400 drivers are randomly checked next Saturday night, what is the probability that the number of drunk drivers will be
+### a) less than 32?
+```{r}
+p = 0.1 
+n = 400
+np = 40
+k_1 = 0
+k_2 = 31
+pr = approxMoivreLaplaceIntegral(k_1,k_2,n,p)
+pr
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2` ) = `r pr`
+$$
+### b) more than 49?
+```{r}
+k_1 = 50
+k_2 = 400
+pr = approxMoivreLaplaceIntegral(k_1,k_2,n,p)
+pr
+```
+
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+### c) at least 35 but less than 47?
+```{r}
+k_1 = 35
+k_2 = 46
+pr = approxMoivreLaplaceIntegral(k_1,k_2,n,p)
+pr
+
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+### d) exactly 404.
+```{r}
+k = 40
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+## 4.A pair of dice is rolled 180 times. What is the probability that a total of 7 occurs
+### a) at least 25 times?
+```{r}
+n = 180
+k = 7
+p = 1 / 6
+k_1 = 25
+k_2 = 180
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
+
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+
+### b) between 33 and 41 times inclusive?
+```{r}
+k_1 = 33
+k_2 = 41
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+### c) exactly 30 times?
+```{r}
+k = 30
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+## 5.One-sixth of the male freshmen entering a large state school are out-of-state students. If the students are assigned at random to dormitories, 180 to a building, what is theprobability that in a given dormitory at least one-fifth of the students are from out of state?
+```{r}
+p = 1 / 6
+n = 180
+np = 30
+k_1 = 36
+k_2 = 180
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+# 6.Poisson approximation
+##6.In a certain industrial facility, accidents occur infrequently. It is known that the probability of an accident on any given day is 0.005 and accidents are independent of each other. 
+
+### a) What is the probability that in any given period of 400 days there will be an accident on one day?
+```{r}
+p = 5 / 1000
+np = 2
+n = 400
+k_1 = 0
+k_2 = 40
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
+```
+$$
+  P(`r k_1` \leq k \leq `r k_2`) = `r pr`
+$$
+### b) What is the probability that there are at most three days with an accident?
+```{r}
+k_1 = 0
+k_2 = 3
+pr = approxMoivreLaplaceIntegral(k_1, k_2, n, p)
+pr
+
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+## 7.It is known by researchers that 1 in 200 people carries a gene that leads to the inheritance of a certain chronic disease. In a random sample of 1000 individuals, what is the probability that fewer than 3individuals carry the gene?
+```{r}
+p = 1 / 200
+n = 30
+np = 5
+k = 2
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+## 8.On average, 3 traffic accidents per month occur ata certain intersection. What is the probability that in any given month at this intersection
+###a) exactly 5 accidents will occur?
+```{r}
+p = 3/30
+np = 3
+n =30
+k = 5
+pr = chooseAproximation(k,n,p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+### b) fewer than 3 accidents will occur?
+```{r}
+pr = 0
+for (i in 0:3)
+  pr = pr +chooseAproximation(3,n,p)
+pr
+
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+### c) at least 2 accidents will occur?
+```{r}
+pr = 1
+for (i in 0:1)
+ pr = pr - chooseAproximation(i,n,p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+#9.The acceptance scheme for purchasing lots containing a large number of batteries is to test no more than 75 randomly selected batteries and to reject a lot if a single battery fails. Suppose the probability of a failure is 0.001.
+## a) What is the probability that a lot is accepted?
+```{r}
+p = 0.001
+n = 75
+k = 0
+pr = chooseAproximation(k, n, p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
+## b) What is the probability that it is rejected in 10 or fewer trials
+```{r}
+k = 10
+pr = chooseAproximation(k,n,p)
+pr
+```
+$$
+  P(k = `r k`)=`r pr`
+$$
 # Implement the cumulative distribution functions
 
 $$
     F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
 $$
 ```{r}
-#comulativeBinomalDistribCalc = function(k,n,p){
-
-  
-#}
-  
-
+comulativeBinomalDistribCalc = function(k,n,p){
+  pr = 0
+  for (i in 0:k) {
+    pr = pr + choose(n, i) * p ^ i * (1 - p) ^ (n - i)
+  }
+  return(pr)
+}
 ```
+
+
 
 
 $$
@@ -276,9 +576,11 @@ $$
 
 
 ```{r}
-#comulativeNormalDistribCalc = function(k,n,p){
- # pnorm()
-#}
+comulativeNormalDistribCalc = function(k,n,p){
+ return (pnorm((k-n*p)/(sqrt(n*p*(1-p)))))
+}
+
+
 
 ```
 ## Implement a function for calculating the approximation accuracy metric as
