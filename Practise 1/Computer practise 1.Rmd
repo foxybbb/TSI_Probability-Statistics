@@ -3,8 +3,8 @@ title: "Probability Theory and Mathematical Statistics"
 author: "Ivan Gercev"
 date: "14 March 2021"
 output:
-  html_notebook: default
   pdf_document: default
+  html_notebook: default
   html_document:
     df_print: paged
 subtitle: 'Practise 1: Basic functions'
