@@ -448,7 +448,7 @@ $$
 ## 5.One-sixth of the male freshmen entering a large state school are out-of-state students. If the students are assigned at random to dormitories, 180 to a building, what is theprobability that in a given dormitory at least one-fifth of the students are from out of state?
 ```{r}
 p = 1 / 6
-n = 180
+n = 180s
 np = 30
 k_1 = 36
 k_2 = 180

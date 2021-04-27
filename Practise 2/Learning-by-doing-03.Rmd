@@ -117,14 +117,7 @@ Suppose you want to calculate probability of exactly one such computer failure o
 ## Solution
 ```{r}
 # Define a function for Poisson approximation
-approxPoisson = function(k, n, p){
-	if (p>0.5){
-		k = n - k
-		p = 1 - p
-	}
-	res = (n*p)^k/factorial(k)*exp(-n*p)
-	return(res)
-}
+
 
 n = 800
 p = 0.001
