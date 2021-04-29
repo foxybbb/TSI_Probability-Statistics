@@ -1,19 +1,16 @@
 ---
 title: "Approximation of the Binomial probabilities in R"
 author: "Ivan Gercev"
-date: "06 April 2021"
+date: "`29 April 2021``"
 output:
   pdf_document: default
-  html_document:
-    df_print: paged
-  html_notebook: default
 subtitle: COMPUTER PRACTICE 2
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-git repository: https://github.com/foxybbb/TSI_Probability-Statistics
+git repository: https://github.com/foxybbb/TSI_Probability-Statistics to see history of creating
 
 # Include functions for Bernoulli formula and Normal and Poisson approximation from learning-by-doing materials 03.
 
@@ -341,7 +338,7 @@ pr
 $$
   P(k = `r k`)=`r pr`
 $$
-###c) be exactly 12?
+### c) be exactly 12?
 ```{r}
 k = 12
 pr = chooseAproximation(k,n,p)
@@ -448,7 +445,7 @@ $$
 ## 5.One-sixth of the male freshmen entering a large state school are out-of-state students. If the students are assigned at random to dormitories, 180 to a building, what is theprobability that in a given dormitory at least one-fifth of the students are from out of state?
 ```{r}
 p = 1 / 6
-n = 180s
+n = 180
 np = 30
 k_1 = 36
 k_2 = 180
@@ -558,7 +555,7 @@ $$
     F_{binom}(k,n,p)= P\{K \leq k\} = \sum_{i=0}^k C_n^i p^i(1-p)^{n-i} 
 $$
 ```{r}
-comulativeBinomalDistribCalc = function(k,n,p){
+comulativeBinomalDistribCalc <- function(k,n,p){
   pr = 0
   for (i in 0:k) {
     pr = pr + choose(n, i) * p ^ i * (1 - p) ^ (n - i)
@@ -576,8 +573,9 @@ $$
 
 
 ```{r}
-comulativeNormalDistribCalc = function(k,n,p){
- return (pnorm((k-n*p)/(sqrt(n*p*(1-p)))))
+comulativeNormalDistribCalc <- function(k,n,p){
+  var = pnorm((k-n*p)/(sqrt(n*p*(1-p))))
+ return (var)
 }
 
 
@@ -587,3 +585,96 @@ comulativeNormalDistribCalc = function(k,n,p){
 $$
   D(n,p) = max|F_{normal}(k,n,p) - F_{binom}(k,n,p)| 
 $$
+
+```{r}
+
+kolmogorovSmirnovTest <- function( n, p) {
+  kd= seq(from = 0,to = n)
+  var = c()
+  for(i in kd){
+    var <- append(var,abs(comulativeNormalDistribCalc(i,n,p)-comulativeBinomalDistribCalc(i,n,p)))
+    
+  }
+  return (max(var))
+}
+
+```
+# Apply the developed function to calculate, plot and analyse accuracy of the normal approximation for different number of trials (n= 10,...,1000) and probability of success (p=0.1, 0.2,...,0.9)
+
+```{r}
+pr  = c()
+color = sample(rainbow(10)) # make color sequence
+
+plot(
+  NA,
+  type = "o",
+  ylim = c(0, 0.6),
+  xlim = c(0, 1000),
+  ylab = "Max delta Error",
+  xlab = "Number of trials"
+) # plot setup
+
+for (p in seq(0.1, 0.9, by = 0.1)) {
+  # loop for robability of success (p=0.1, 0.2,...,0.9)
+  for (n in seq(1, 1000, by = 50)) {
+    # loop for different number of trials (n= 10,...,1000)
+    pr <- append(pr, kolmogorovSmirnovTest(n, p))
+    
+  }
+  
+  lines(
+    seq(1, 1000, by = 50),
+    # x axis
+    pr,
+    # y axis
+    type = "o",
+    # plot type, line with points
+    col = color[p * 10],
+    # select random  color from color array
+    lwd = 2 # line width
+  ) # add line to a graph
+  pr <- NULL # Zeroing an array
+}
+legend(
+  x = "topright",
+  # legend position
+  title = "Probability of success",
+  legend = c(seq(0.1, 0.9, by = 0.1)),
+  # names of lines
+  col = color,
+  #color
+  lwd = 2 # line width
+) # draw a legend of the plot
+
+```
+# 9.Make the conclusions of approximation accuracy and include them into the markdown.
+
+After analyzing the graph presented above, we can conclude that the difference between Fnorm and Fbinom is greater when the values of n(number of trials) and p(probability of success) are small)
+  
+# 10.(Optional) Check that the Berry–Esseen inequalityis satisfied for all nand p:
+
+```{r}
+# ///!!! not tested function !!!///
+
+
+BerryEsseenInequality <- function(n, p) {
+  Clarge = 0.4748
+  nAll = seq(1, n)
+  pAll = seq(0.1, p, by = 0.1)
+  var = Clarge * ((pAll ^ 2 + (1 - pAll) ^ 2 / (sqrt(
+    nAll * pAll * (1 - pAll)
+  ))))
+  if (kolmogorovSmirnovTest(n, p) >= var) {
+    return(1)
+  } else {
+    return(0)
+    
+  }
+}
+
+
+```
+
+
+
+```
