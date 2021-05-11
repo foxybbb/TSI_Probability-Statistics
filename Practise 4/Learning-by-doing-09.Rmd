@@ -1,0 +1,138 @@
+---
+title: "Probability Theory and Mathematical Statistics"
+subtitle: "Script 9: Sample Statistics"
+author: "Dmitry Pavlyuk"
+##date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.height=4) 
+library(knitr)
+```
+
+
+# Sample statistics
+
+## Loading data
+```{r}
+# load data from CSV file
+flats <- read.csv("data.csv", header=T, sep=";")
+kable(head(flats), caption ="First observations")
+n = nrow(flats)
+```
+Sample volume = `r n`
+
+## Descriptive statistics for quantitative data
+```{r}
+
+kable(summary(flats), caption ="Summary statistics")
+
+# Define a function for the sample mode calculation
+mode <- function(x) {
+  ux <- unique(x)
+  return(ux[which.max(tabulate(match(x, ux)))])
+}
+```
+
+
+### Descriptive statistics for Rooms
+```{r}
+df = data.frame(unclass(summary(flats$Rooms)))
+colnames(df)<-c("Rooms")
+kable(df,caption ="5-number statistics (Rooms)")
+```
+Sample mode = `r mode(flats$Rooms)`
+```{r}
+kable(table(flats$Rooms),caption ="Absolute frequencies (Rooms)")
+wj = table(flats$Rooms)/n
+kable(round(wj, digits=3),caption ="Relative frequencies (Rooms)")
+plot(wj, type="b", main="Distribution (Rooms)")
+
+plot(ecdf(flats$Rooms), main="Empirical cumulative distribution function (Rooms)")
+```
+
+### Descriptive statistics for Price
+```{r}
+df = data.frame(unclass(summary(flats$Price)))
+colnames(df)<-c("Price")
+kable(df,caption ="5-number statistics (Price)")
+```
+Sample mode = `r mode(flats$Price)`
+```{r}
+boxplot(flats$Price, main="Box-and-whisker plot (Price)")
+
+# Statistical distribution
+wj = hist(flats$Price, plot=FALSE)
+df= data.frame(breaks = wj$breaks[-1],AbsFreq=wj$counts,RelFreq=wj$counts/n)
+kable(df, caption ="Statistical distribution series (Price)")
+hist(flats$Price, main="Histogram (Price)")
+
+plot(ecdf(flats$Price), main="Empirical cumulative distribution function (Price)")
+```
+
+### Descriptive statistics for Area
+```{r}
+df = data.frame(unclass(summary(flats$Area)))
+colnames(df)<-c("Area")
+kable(df,caption ="5-number statistics (Area)")
+```
+Sample mode = `r mode(flats$Area)`
+```{r}
+boxplot(flats$Area, main="Box-and-whisker plot (Area)")
+
+
+# Statistical distribution
+wj = hist(flats$Area, plot=FALSE)
+df= data.frame(breaks = wj$breaks[-1],AbsFreq=wj$counts,RelFreq=wj$counts/n)
+kable(df, caption ="Statistical distribution series (Area)")
+hist(flats$Area, main="Histogram (Area)")
+
+plot(ecdf(flats$Area), main="Empirical cumulative distribution function (Area)")
+```
+
+
+## Descriptive statistics for quanlitative data
+```{r}
+library(qcc)
+```
+
+### Descriptive statistics for Type
+Sample mode = `r mode(flats$Type)`
+```{r}
+kable(table(flats$Type),caption ="Absolute frequencies (Type)")
+wj = table(flats$Type)/n
+kable(round(wj, digits=3),caption ="Relative frequencies (Type)")
+barplot(wj/n, main="Bar plot (Type")
+pareto.chart(wj/n, main="Pareto Chart (Type)")
+
+```
+### Descriptive statistics for District
+Sample mode = `r mode(flats$District)`
+```{r}
+kable(table(flats$District),caption ="Absolute frequencies (District)")
+wj = table(flats$District)/n
+kable(round(wj, digits=3),caption ="Relative frequencies (District)")
+barplot(wj/n, main="Bar plot (District)")
+pareto.chart(wj/n, main="Pareto Chart (District)")
+
+```
+
+### Two-variable statistics
+
+Contigency table for Type and District
+
+```{r}
+ct = table(flats$District, flats$Type)
+kable(ct, caption ="Contigency table - absolute frequencies (Type, District)")
+
+kable(margin.table(ct, 1), caption ="Marginal frequencies (Type)")
+kable(margin.table(ct, 2), caption ="Marginal frequencies (District)")
+
+kable(prop.table(ct), caption ="Contingency table - relative frequencies (to sample size)")
+kable(prop.table(ct,1), caption ="Contingency table - relative frequencies (to row sums)")
+kable(prop.table(ct,2), caption ="Contingency table - relative frequencies (to column sums)")
+```

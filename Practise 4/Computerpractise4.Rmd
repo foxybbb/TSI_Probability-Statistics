@@ -1,0 +1,131 @@
+---
+title: "COMPUTER PRACTICE 4.Exploratory  data analysis in R"
+author: "Ivan Gercev"
+date: "06 April 2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
+subtitle: COMPUTER PRACTICE 4
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.height=4) 
+library(knitr)
+```
+```{r}
+
+packages <- c("qcc", "dplyr", "tidyr")
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+
+library(qcc)
+library(dplyr)
+library(tidyr)
+```
+
+```{r}
+
+
+if (!file.exists("wine_data.csv")) {
+  id <- "17SRO5g0Ho1GWHFwfYtYSoMlGlMJBdd7o" # google file ID
+  
+  download.file(
+    sprintf("https://docs.google.com/uc?id=%s&export=download", id),
+    destfile = "wine_data.csv",
+    noprogress = TRUE
+  )
+  
+}
+
+```
+
+temp <- tempfile()
+  download.file(URL, temp, noprogress = FALSE)
+  data <- read.table(unz(temp, "winemag-data_first150k.csv"))
+  kable(head(data), caption = "data")
+  
+  
+
+
+
+```{r}
+wine_table <- read.csv("wine_data.csv",header=T ,sep = ",")
+kable(head(wine_table), caption ="Wine Reviews")
+
+```
+
+```{r}
+samplesAmount = nrow(wine_table)
+samplesAmount
+```
+Number of samples `r samplesAmount`
+
+```{r}
+kable(summary(wine_table), caption ="Summary statistics")
+
+```
+```{r}
+df = data.frame(unclass(summary(wine_table$title)))
+colnames(df)<-c("")
+kable(df,caption ="title")
+
+```
+```{r}
+plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (Area)")
+```
+```{r}
+#kable(table(wine_table),caption ="Absolute frequencies (Rooms)")
+
+```
+
+```{r}
+
+hist(wine_table$points, main="Histogram (Price)")
+
+```
+```{r}
+wj = table(wine_table$points)/n
+kable(round(wj, digits=3),caption ="Relative frequencies (Rooms)")
+
+```
+```{r}
+
+pareto.chart(wj/samplesAmount, main="Pareto Chart (Type)")
+
+```
+
+```{r}
+
+attach(mtcars)
+plot(wine_table$points, wine_table$trestbps, main="e",
+   xlab="", ylab="M ", pch=19) 
+```
+```{r}
+fk_data <- data.frame(x1 = sample(letters[1:5], 20, replace = TRUE), 
+                      x2 = sample(LETTERS[1:5], 20, replace = TRUE))
+
+# have a look at the data set
+print.data.frame(fk_data)
+
+
+```
+```{r}
+
+
+```
+```{r}
+# create a table
+
+
+```
+
+
+```{r}
+a_table <-
+  fk_data %>% 
+  group_by(x1,x2) %>% 
+  tally() %>% 
+  spread(key = x2, value = n)
+print.data.frame(a_table)
+```
