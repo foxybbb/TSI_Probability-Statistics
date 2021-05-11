@@ -8,7 +8,7 @@ output:
   html_notebook: default
   html_document: default
 ---
-
+GitHub repository https://github.com/foxybbb/TSI_Probability-Statistics
 
 
 # Create a new R markdown and include the codesfor the central limit theorem illustrationfrom learning-by-doingmaterials 08
