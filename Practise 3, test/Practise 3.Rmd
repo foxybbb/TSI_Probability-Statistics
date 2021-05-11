@@ -1,0 +1,117 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+## Ivans Gercevs Parctise 3 Notes
+```{r}
+for (i in 1:10){}
+  
+
+
+
+
+```
+
+```{r}
+set.seed(0)
+pois <- rpois(100, lambda = 1)
+sum(pois[1:10])
+```
+
+
+```{r}
+n = 10
+p =0.1
+x = seq(0,n)
+px = dbinom(x,n,p)
+
+```
+
+```{r}
+factorial(6)
+  
+
+
+
+
+```
+
+```{r}
+for (i in 1:10){
+  
+  print("hello")
+  Sys.sleep(3)
+  
+}
+  
+
+
+
+
+```
+
+
+```{r}
+choose(100,6)
+
+```
+
+$$
+formula = (n(n+1))/2.
+$$
+```{r}
+(100 * 101)/2
+```
+
+
+```{r}
+x=2
+dnorm(x,0,1)
+```
+
+
+
+```{r}
+length(seq (0, 1, by = 0.1))
+
+```
+
+
+```{r}
+x = 2
+dnorm(x,0,1)
+
+```
+
+```{r}
+x = 0.5
+
+dexp(x,1)
+
+
+
+```
+
+
+
+```{r}
+set.seed(0)
+
+X <- sample(x,25)
+mean(X)
+
+```
+
+
+```{r}
+
+qnorm(0,1,2)
+
+
+```
+
+
+
