@@ -1,0 +1,54 @@
+---
+
+title: "Probability Theory and Mathematical Statistics"
+subtitle: "Script 8: Law of Large Numbers"
+author: "Dmitry Pavlyuk"
+#: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_notebook: default
+  pdf_document: default
+  html_document: default
+
+
+---
+
+
+
+# Create a new R markdown and include the codesfor the central limit theorem illustrationfrom learning-by-doingmaterials 08
+
+
+## Central Limit Theorem
+
+#_Convergence of a sum of random variables to the normal distribution_
+
+### Sum of uniformly distributed rabdon variables
+```{r  figures-side, fig.show="hold", out.width="50%"}
+for(i in c(2, 4, 30, 300)) {
+	# Repeat the experiment 10000 times
+	sums= replicate(10000,sum(runif(i)))
+	
+	# Sample mean and standard deviation
+	mu=mean(sums)
+	s = sd(sums)
+	
+	# Plot the histogram of sums
+	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"uniformly distributed variables"))
+	
+	# Add the normal curve for comparison
+	x <- seq(0,i,length=100)
+	curve(dnorm(x), col = "red", add = TRUE)
+}
+```
+
+
+## Sum of exponentially distributed rabdon variables
+```{r  fig.show="hold", out.width="50%"}
+for(i in c(2, 4, 30, 300)) {
+	sums= replicate(10000,sum(rexp(i)))
+	mu = mean(sums)
+	s = sd(sums)
+	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"exponentially distributed variables"))
+	x <- seq(0,i,length=100)
+	curve(dnorm(x), col = "red", add = TRUE)
+}
+```

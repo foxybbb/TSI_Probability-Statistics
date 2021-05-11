@@ -1,0 +1,168 @@
+---
+title: "Probability Theory and Mathematical Statistics"
+subtitle: "Script 8: Law of Large Numbers"
+author: "Dmitry Pavlyuk"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Bernoulli's law of large numbers 
+
+_Convergence of the relative frequency to the theoretical probability_
+```{r}
+# Define number of random experiments (n) and number of positive outcomes (k)
+p0 = 1/6
+n = 0
+k = 0
+
+# Define a vector for storing intermediate relative frequencies
+relFrequencies = c()
+
+# Define number of simulations
+N = 3000
+
+# Simulate the experiment N times
+for (i in 1:N){
+	# result - simple simulation of a die
+	result = sample(c(1,2,3,4,5,6), 1)
+	
+	# increase number of conducted experiments
+	n = n + 1
+
+	# increase number of positive outcomes (if '6' is obtained)
+	if (result == 6) k = k + 1
+
+	# Calculate the intermedirelative frequency value and add it to the vector
+	w = k/n
+	relFrequencies = append(relFrequencies, w)
+
+}
+
+# Calculate 95% interval using the estimate of Bernoulli's theorem
+gamma = 0.95
+err = sqrt(relFrequencies*(1-relFrequencies)/((1:N)*gamma))
+```
+
+Plot relative frequencies and confidence interval 
+against number of conducted experiments
+```{r}
+	plot(relFrequencies, type="l")
+	lines(1:N, relFrequencies-err, lty = 'dashed', col = 'blue')
+  lines(1:N, relFrequencies+err, lty = 'dashed', col = 'blue')
+	abline(h=p0, col="red")
+```
+
+Print out first 10 values of relative frequencies
+```{r}
+kable(head(relFrequencies, n=10))
+```
+
+Print out last 10 values of relative frequencies
+```{r}
+kable(tail(relFrequencies, n=10))
+```
+
+
+
+# Chebyshev's law of large numbers 
+
+_Convergence of the mean to the theoretical expected value_
+
+```{r}
+# Define a vector for storing intermediate mean values
+sample.means = c()
+
+# Theoretical expected value
+mu = 10
+
+# Theoretical standard deviation
+sd = 10
+
+# Intermediate sum of values
+sumX = 0
+
+# Simulate the experiment N times
+for (i in 1:N){
+	# result - implementation of the normally distributed random variables
+	result = rnorm(1,mean=mu, sd=sd)
+	
+	# Add newly generated value to the total sum
+	sumX = sumX + result
+	
+	# Intermediate mean value
+	m = sumX/i
+
+	# Add intermediate mean values to the vector
+	sample.means = append(sample.means, m)
+}
+
+# Calculate 95% interval using the estimate of Chebyshev's theorem
+gamma = 0.95
+err = sd / sqrt((1:N)*gamma)
+```
+
+
+Plot mean values and related confidence interval 
+against number of conducted experiments
+```{r}
+	plot(sample.means, type="l")
+	lines(1:N, sample.means-err, lty = 'dashed', col = 'blue')
+  lines(1:N, sample.means+err, lty = 'dashed', col = 'blue')
+	abline(h=mu, col="red")
+```
+
+Print out first 10 values of the mean
+```{r}
+kable(head(sample.means, n=10))
+```
+
+Print out last 10 values of the mean
+```{r}
+kable(tail(sample.means, n=10))
+```
+
+
+
+
+# Central Limit Theorem
+
+_Convergence of a sum of random variables to the normal distribution_
+
+## Sum of uniformly distributed rabdon variables
+```{r  figures-side, fig.show="hold", out.width="50%"}
+for(i in c(2, 4, 30, 300)) {
+	# Repeat the experiment 10000 times
+	sums= replicate(10000,sum(runif(i)))
+	
+	# Sample mean and standard deviation
+	mu=mean(sums)
+	s = sd(sums)
+	
+	# Plot the histogram of sums
+	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"uniformly distributed variables"))
+	
+	# Add the normal curve for comparison
+	x <- seq(0,i,length=100)
+	curve(dnorm(x), col = "red", add = TRUE)
+}
+```
+
+
+## Sum of exponentially distributed rabdon variables
+```{r  fig.show="hold", out.width="50%"}
+for(i in c(2, 4, 30, 300)) {
+	sums= replicate(10000,sum(rexp(i)))
+	mu = mean(sums)
+	s = sd(sums)
+	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"exponentially distributed variables"))
+	x <- seq(0,i,length=100)
+	curve(dnorm(x), col = "red", add = TRUE)
+}
+```
