@@ -1,0 +1,135 @@
+---
+title: "Probability Theory and Mathematical Statistics"
+subtitle: "Script 10: Statistical (sampling) Distributions. Confidence Intervals."
+author: "Dmitry Pavlyuk"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Statistical (sampling) distributions
+
+## Chi-square distribution
+```{r}
+x <- seq(0,20,length=1000)
+
+plot(x, dchisq(x, 3), type="l", xlab="x", ylab="f(x)", col="red", 
+     main="Chi-square: probability density function")
+lines(x, dchisq(x, 5), col="green")
+lines(x, dchisq(x, 10), col="blue")
+```
+
+
+## Student distribution
+```{r}
+x <- seq(-4,4,length=1000)
+
+plot(x, dt(x, 10), type="l", xlab="x", ylab="f(x)", col="blue",
+     main="Student distribution: probability density function")
+lines(x, dt(x, 3), col="green")
+lines(x, dt(x, 1), col="red")
+```
+
+
+### Convergence of the Student distribution to the Normal distribution for large degree of freedom
+```{r}
+gamma = 0.95
+level = (1+gamma)/2
+x <- seq(2, 150)
+
+plot(x, qt(level,x), type="l", xlab="Degrees of freedom", ylab="95% quantile", 
+     col="blue",
+     main="Student distribution's quantiles")
+
+# Normal quantile
+lines(x, rep(qnorm(level),length(x)), col="red")
+```
+
+# Confidence intervals
+
+## Graphical illustation of confidence intervals for normally distributed estimates
+```{r}
+
+x <- seq(-4,4,length=100)
+
+# Quantiles for 95% confidence interval (2.5% and 97.5% quantiles)
+gamma = 0.95
+q1=qnorm((1-gamma)/2)
+q2=qnorm((1+gamma)/2)
+```
+Lower bound = `r q1`
+Upper bound = `r q2`
+
+```{r}
+hx <- dnorm(x)
+plot(x, hx, type="l", xlab="x", ylab="f(x)",
+     main="Normal PDF")
+polygon(c(q1,x[q1 <= x & x  <= q2],q2), c(0,hx[q1 <=x & x <= q2],0),
+        col="lightgray") 
+```
+
+## Constructing confidence intervals
+
+### Loading data
+```{r}
+# load data from CSV file
+flats <- read.csv("data.csv", header=T, sep=";")
+kable(head(flats), caption ="First observations")
+n = nrow(flats)
+```
+Sample volume = `r n`
+
+### Confidence intervals for the expected value
+```{r}
+gamma = 0.95
+level = (1+gamma)/2
+```
+Confidence level, $\gamma$ = `r gamma`
+
+```{r}
+# Calculate marginal error
+delta = qnorm(level)*sd(flats$Price)/sqrt(n)
+```
+Margin of error = `r delta`
+
+Confidence intervals for the expected value (normal): 
+`r mean(flats$Price) + c(-delta, delta)`
+
+Confidence intervals for the expected value (Student):
+```{r}
+t.test(flats$Price, conf.level=gamma)$conf.int
+```
+
+### Confidence intervals for probability
+
+```{r}
+nA = sum(flats$Rooms==3)
+w = nA/n
+```
+Absolute frequency of 3-room flats = `r nA`
+
+Relative frequency of 3-room flats = `r w`
+
+```{r}
+delta = qnorm(level)*sqrt(w*(1-w)/n)
+```
+Margin of error = `r delta`
+
+Confidence intervals for the expected value (normal): `r w+c(-delta, delta)`
+
+```{r}
+# Constructing the exact interval (binomial distribution)
+library(binom)  
+
+kable(binom.confint(nA,n), 
+      caption = "Different approaches to confidence intervals for probability")
+
+kable(binom.confint(nA,n, method="exact"), 
+      caption = "\"Exact\" confidence interval for 3-room flats")
+```
