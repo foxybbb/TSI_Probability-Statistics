@@ -10,23 +10,26 @@ output:
 subtitle: COMPUTER PRACTICE 4
 ---
 ```{r setup, include=FALSE}
+library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.height=4) 
 
 ```
 # Data processing
 ## installing the requirements
-```{r}
-packages <- c("qcc", "dplyr", "tidyr","knitr")
+```{r echo=FALSE}
+packages <- c("qcc", "dplyr", "tidyr","knitr","plyr")
 install.packages(setdiff(packages, rownames(installed.packages()))) 
-library(knitr)
+
 library(qcc)
+library(rlang)
 library(dplyr)
-library(tidyr)
+library(tidyr) 
+
 ```
 
 ## Data downloading from the source
-```{r}
+```{r echo=FALSE}
 
 
 if (!file.exists("wine_data.csv")) {
@@ -44,77 +47,81 @@ if (!file.exists("wine_data.csv")) {
 ## Read data set file
 
 ```{r}
-wine_table <- read.csv("wine_data.csv",header=T ,sep = ",")
-kable(head(wine_table), caption ="Wine Reviews")
+wine_data <- read.csv("wine_data.csv",header=T ,sep = ",")
+kable(head(wine_data), caption ="Chess players")
 ```
 
 # Descriptive statistics 
 ```{r}
-kable(summary(wine_table), caption ="Summary statistics")
+kable(summary(wine_data), caption ="Summary statistics")
 
 ```
 ```{r}
-samplesAmount = nrow(wine_table)
+samplesAmount = nrow(wine_data)
 samplesAmount
 ```
 Number of samples `r samplesAmount`
 
-# Descriptive statistics for points of wine
+# Descriptive statistics for points of age of chess players
 ```{r}
-df = data.frame(unclass(summary(wine_table$points)))
+df = data.frame(unclass(summary(wine_data$points)))
 colnames(df)<-c("points")
-kable(df,caption ="5-number statistics (Rooms)")
+kable(df,caption ="5-number statistics (Age)")
 
 ```
 ```{r}
-plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (points)")
+plot(ecdf(wine_data$points), main="Empirical cumulative distribution function (Age)")
 ```
 ```{r}
-kable(table(wine_table$points),caption ="Absolute frequencies (Rooms)")
-
-```
-
-```{r}
-
-hist(wine_table$points, main="Histogram (points)")
-
-```
-```{r}
-n = nrow(wine_table)
-wj = table(wine_table$points)/n
-kable(round(wj, digits=3),caption ="Relative frequencies (points)")
+kable(table(wine_data$points),caption ="Absolute frequencies (Age)")
 
 ```
 
 ```{r}
 
-plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (points)")
-
-plot(wj, type="b", main="Distribution (Points)")
-
-boxplot(wine_table$points, main="Box-and-whisker plot (Points)")
+hist(wine_data$points, main="Histogram (Age)")
 
 ```
-
 ```{r}
-df = data.frame(unclass(summary(wine_table$price)))
-colnames(df)<-c("Price")
-kable(df,caption ="5-number statistics (Price)")
-```
-```{r}
-
-boxplot(wine_table$price, main="Box-and-whisker plot (Price)")
+wj = table(wine_data$points)/samplesAmount
+kable(round(wj, digits=3),caption ="Relative frequencies (Age)")
 
 ```
 
 ```{r}
 
-pareto.chart(wj/samplesAmount, main="Pareto Chart (Type)")
+plot(ecdf(wine_data$points), main="Empirical cumulative distribution function (Age)")
+
+plot(wj, type="b", main="Distribution (Age)")
+
+boxplot(wine_data$points, main="Box-and-whisker plot (Age)")
 
 ```
+
+
+
 ```{r}
-table(wine_table$country)
+
+barplot(wine_data$points,xlab="player ages") 
+# Display the 5 largest countries by number of samples
+nwj = table(wine_data$country)/samplesAmount
+pie(round(tail(sort(nwj),5),digits = 1),radius = 1)
+
+pareto.chart(wj/samplesAmount, main="Pareto Chart")
 
 
+
+
+```
+
+```{r}
+plot(wine_data$price,wine_data$points, main="Scatterplot",
+   xlab="Wine price", ylab="Wine points", pch=19,col = "green") 
+
+```
+
+```{r}
+
+table(wine_data$country, wine_data$points,dnn = c("countries","points"))
 ```
 
