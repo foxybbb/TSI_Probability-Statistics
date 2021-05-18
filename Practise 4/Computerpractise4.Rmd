@@ -12,18 +12,20 @@ subtitle: COMPUTER PRACTICE 4
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.height=4) 
-library(knitr)
+
 ```
+# Data processing
+## installing the requirements
 ```{r}
-
-packages <- c("qcc", "dplyr", "tidyr")
+packages <- c("qcc", "dplyr", "tidyr","knitr")
 install.packages(setdiff(packages, rownames(installed.packages()))) 
-
+library(knitr)
 library(qcc)
 library(dplyr)
 library(tidyr)
 ```
 
+## Data downloading from the source
 ```{r}
 
 
@@ -37,95 +39,82 @@ if (!file.exists("wine_data.csv")) {
   )
   
 }
-
+ 
 ```
-
-temp <- tempfile()
-  download.file(URL, temp, noprogress = FALSE)
-  data <- read.table(unz(temp, "winemag-data_first150k.csv"))
-  kable(head(data), caption = "data")
-  
-  
-
-
+## Read data set file
 
 ```{r}
 wine_table <- read.csv("wine_data.csv",header=T ,sep = ",")
 kable(head(wine_table), caption ="Wine Reviews")
-
 ```
 
+# Descriptive statistics 
+```{r}
+kable(summary(wine_table), caption ="Summary statistics")
+
+```
 ```{r}
 samplesAmount = nrow(wine_table)
 samplesAmount
 ```
 Number of samples `r samplesAmount`
 
+# Descriptive statistics for points of wine
 ```{r}
-kable(summary(wine_table), caption ="Summary statistics")
+df = data.frame(unclass(summary(wine_table$points)))
+colnames(df)<-c("points")
+kable(df,caption ="5-number statistics (Rooms)")
 
 ```
 ```{r}
-df = data.frame(unclass(summary(wine_table$title)))
-colnames(df)<-c("")
-kable(df,caption ="title")
-
+plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (points)")
 ```
 ```{r}
-plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (Area)")
-```
-```{r}
-#kable(table(wine_table),caption ="Absolute frequencies (Rooms)")
+kable(table(wine_table$points),caption ="Absolute frequencies (Rooms)")
 
 ```
 
 ```{r}
 
-hist(wine_table$points, main="Histogram (Price)")
+hist(wine_table$points, main="Histogram (points)")
 
 ```
 ```{r}
+n = nrow(wine_table)
 wj = table(wine_table$points)/n
-kable(round(wj, digits=3),caption ="Relative frequencies (Rooms)")
+kable(round(wj, digits=3),caption ="Relative frequencies (points)")
 
 ```
+
+```{r}
+
+plot(ecdf(wine_table$points), main="Empirical cumulative distribution function (points)")
+
+plot(wj, type="b", main="Distribution (Points)")
+
+boxplot(wine_table$points, main="Box-and-whisker plot (Points)")
+
+```
+
+```{r}
+df = data.frame(unclass(summary(wine_table$price)))
+colnames(df)<-c("Price")
+kable(df,caption ="5-number statistics (Price)")
+```
+```{r}
+
+boxplot(wine_table$price, main="Box-and-whisker plot (Price)")
+
+```
+
 ```{r}
 
 pareto.chart(wj/samplesAmount, main="Pareto Chart (Type)")
 
 ```
-
 ```{r}
-
-attach(mtcars)
-plot(wine_table$points, wine_table$trestbps, main="e",
-   xlab="", ylab="M ", pch=19) 
-```
-```{r}
-fk_data <- data.frame(x1 = sample(letters[1:5], 20, replace = TRUE), 
-                      x2 = sample(LETTERS[1:5], 20, replace = TRUE))
-
-# have a look at the data set
-print.data.frame(fk_data)
-
-
-```
-```{r}
-
-
-```
-```{r}
-# create a table
+table(wine_table$country)
 
 
 ```
 
-
-```{r}
-a_table <-
-  fk_data %>% 
-  group_by(x1,x2) %>% 
-  tally() %>% 
-  spread(key = x2, value = n)
-print.data.frame(a_table)
-```

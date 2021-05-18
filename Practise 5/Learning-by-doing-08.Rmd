@@ -64,6 +64,11 @@ Print out first 10 values of relative frequencies
 kable(head(relFrequencies, n=10))
 ```
 
+
+
+
+
+
 Print out last 10 values of relative frequencies
 ```{r}
 kable(tail(relFrequencies, n=10))
@@ -128,4 +133,29 @@ Print out last 10 values of the mean
 kable(tail(sample.means, n=10))
 ```
 
+
+
+```{r}
+ecdf(x)  
+
+
+```
+
+
+
+
+
+```{r}
+
+kolmogorovSmirnovTest <- function( n, p) {
+  kd= seq(from = 0,to = n)
+  var = c()
+  for(i in kd){
+  #  var <- append()
+    
+  }
+  return (max(var))
+}
+
+```
 
