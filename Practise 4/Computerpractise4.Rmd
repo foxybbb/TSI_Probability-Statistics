@@ -1,7 +1,7 @@
 ---
 title: "COMPUTER PRACTICE 4.Exploratory  data analysis in R"
-author: "Ivan Gercev"
-date: "06 April 2021"
+author: "Ivans Gercevs"
+date: "18 May 2021"
 output:
   pdf_document: default
   html_document:
@@ -9,27 +9,29 @@ output:
   html_notebook: default
 subtitle: COMPUTER PRACTICE 4
 ---
+
+
+
 ```{r setup, include=FALSE}
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.height=4) 
 
-```
 # Data processing
 ## installing the requirements
-```{r echo=FALSE}
-packages <- c("qcc", "dplyr", "tidyr","knitr","plyr")
+
+packages <- c("qcc", "dplyr", "tidyr","knitr")
 install.packages(setdiff(packages, rownames(installed.packages()))) 
 
 library(qcc)
 library(rlang)
 library(dplyr)
-library(tidyr) 
-
+#library(tidyr) 
+library(readr)
 ```
 
 ## Data downloading from the source
-```{r echo=FALSE}
+```{r}
 
 
 if (!file.exists("wine_data.csv")) {
@@ -47,8 +49,13 @@ if (!file.exists("wine_data.csv")) {
 ## Read data set file
 
 ```{r}
-wine_data <- read.csv("wine_data.csv",header=T ,sep = ",")
-kable(head(wine_data), caption ="Chess players")
+#wine_data <- read.csv("wine_data.csv",header=T ,sep = ",")
+wine_data <- read_csv("wine_data.csv")
+
+```
+```{r}
+
+kable(head(wine_data), caption ="Chess players",n=10)
 ```
 
 # Descriptive statistics 
@@ -113,13 +120,15 @@ pareto.chart(wj/samplesAmount, main="Pareto Chart")
 
 
 ```
-
+# Scatterplots
 ```{r}
 plot(wine_data$price,wine_data$points, main="Scatterplot",
    xlab="Wine price", ylab="Wine points", pch=19,col = "green") 
 
 ```
 
+
+# Contingencytables
 ```{r}
 
 table(wine_data$country, wine_data$points,dnn = c("countries","points"))
