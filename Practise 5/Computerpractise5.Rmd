@@ -1,7 +1,7 @@
 ---
 title: "Probability Theory and Mathematical Statistics"
-subtitle: "Script 8: Law of Large Numbers"
-author: "Dmitry Pavlyuk"
+subtitle: "Practise 5"
+author: "Ivans Gercevs"
 #: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document: default
@@ -53,7 +53,32 @@ for(i in c(2, 4, 30, 300)) {
 # Analyse convergence in distribution, provided by the central limit theorem, by plotting the empirical cumulative distribution function (ecdfcommand) for different distribution (exponential and uniform) and number of summands.
 
 ```{r}
-plot(ecdf(x))
+x = seq(0,100,by = 0.01)
+
+
+
+
+exponent = exp(x)
+pr1 = ecdf(exponent)
+plot(exponent,type="l")
+
+z = seq(-3, 3, by=0.01)
+pr1 = P(z) 
+
+plot(pr1,type="l")
+
+
+unif = dunif(x,min = 15,max = 50)
+pr2 = ecdf(unif)
+plot(unif,type="l")
+plot(pr2)
+
+rand = rnorm(x)
+pr2 = ecdf(rand)
+plot(rand)
+plot(pr2)
+
+
 ```
 
 
