@@ -18,6 +18,8 @@ GitHub repository https://github.com/foxybbb/TSI_Probability-Statistics
 
 #_Convergence of a sum of random variables to the normal distribution_
 
+# Analyse convergence in distribution, provided by the central limit theorem, by plotting the empirical cumulative distribution function (ecdfcommand) for different distribution (exponential and uniform) and number of summands.
+
 ### Sum of uniformly distributed rabdon variables
 ```{r  figures-side, fig.show="hold", out.width="50%"}
 for(i in c(2, 4, 30, 300)) {
@@ -29,77 +31,111 @@ for(i in c(2, 4, 30, 300)) {
 	s = sd(sums)
 	
 	# Plot the histogram of sums
+	plot(ecdf((sums-mu)/s),main=paste("Function  of", i," uniformly empirical cumulative distribution variables"))
 	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"uniformly distributed variables"))
 	
 	# Add the normal curve for comparison
 	x <- seq(0,i,length=100)
 	curve(dnorm(x), col = "red", add = TRUE)
 }
+
 ```
 
 
 ## Sum of exponentially distributed rabdon variables
 ```{r  fig.show="hold", out.width="50%"}
 for(i in c(2, 4, 30, 300)) {
-	sums= replicate(10000,sum(rexp(i)))
-	mu = mean(sums)
-	s = sd(sums)
-	hist((sums-mu)/s,freq=FALSE, main=paste("Sums of", i,"exponentially distributed variables"))
-	x <- seq(0,i,length=100)
-	curve(dnorm(x), col = "red", add = TRUE)
+  sums = replicate(10000, sum(rexp(i)))
+  mu = mean(sums)
+  s = sd(sums)
+  plot(
+    ecdf((sums - mu) / s),
+    main = paste(
+      "Function  of",
+      i,
+      "exponentially empirical cumulative distribution variables"
+    )
+  )
+  hist((sums - mu) / s,
+       freq = FALSE,
+       main = paste("Sums of", i, "exponentially distributed variables")
+  )
+  x <- seq(0, i, length = 100)
+  curve(dnorm(x), col = "red", add = TRUE)
+  
 }
-```
-
-# Analyse convergence in distribution, provided by the central limit theorem, by plotting the empirical cumulative distribution function (ecdfcommand) for different distribution (exponential and uniform) and number of summands.
-
-```{r}
-x = seq(0,100,by = 0.01)
-
-
-
-
-exponent = exp(x)
-pr1 = ecdf(exponent)
-plot(exponent,type="l")
-
-z = seq(-3, 3, by=0.01)
-pr1 = P(z) 
-
-plot(pr1,type="l")
-
-
-unif = dunif(x,min = 15,max = 50)
-pr2 = ecdf(unif)
-plot(unif,type="l")
-plot(pr2)
-
-rand = rnorm(x)
-pr2 = ecdf(rand)
-plot(rand)
-plot(pr2)
-
 
 ```
+
 
 
 
 # Implement a function for calculating the approximation accuracy metric as:
 
 ```{r}
-monte_carlov_mthd <- function(x) {
-  kd= seq(from = 0,to = x)
-  pr = c()
-  for(i in kd){
-  #  pr <- append(abs(Fnormal(i)-Fsum(i))
-    
-  }
-  return (max(pr))
+# function which calculating ...
+kolomogorov_smirnov_mthd <- function(sums) {
+  x <- seq(0, i, length = length(sums))
+  # Sample mean and standard deviation
+  mu = mean(sums)
+  s = sd(sums)
+  # Create normal distribution  using mean, sd
+  norm = dnorm(x, mean = mu, sd = s)
+  return (max(abs(norm - sums)))
+  
+}
+```
+```{r}
+pr1 = c()
+pr2 = c()
+
+# testing with function using uniform distributed variables
+for (i in c(2, 4, 30, 300)) {
+  sums = replicate(10000, sum(runif(i)))
+  pr1 <- append (pr1, kolomogorov_smirnov_mthd(sums))
+}
+# testing with function using exponentially distributed variables
+for (i in c(2, 4, 30, 300)) {
+  sums = replicate(10000, sum(rexp(i)))
+  pr2 <- append (pr2, kolomogorov_smirnov_mthd(sums))
 }
 ```
 
+For uniform distributed variables `r pr1`
+
+
+For exponentially distributed variables `r pr2`
+
+# Develop a function St(n, k, A)that returns a random sample of size k=1000 for the following statistic (distribution of summands can be chosen arbitrary)
 ```{r}
-St <- function(n, k, A){
-  #(k-A)/(s/sqrt(n))
-  return ()
+
+St <- function(n, k = 1000, A) {
+  sums = replicate(k, sum(rexp(2)))
+  mu = mean(sums)
+  s = sd(sums)
+  
+  return (mu - A) / (s / sqrt(n))
 }
+
+print(St(10,1000,2))
 ```
+# Calculate empirical 90%, 95%, 99% quantiles for the constructed statistic for n=10 and compare them with sampling distributions you know. Make the conclusion and include it into the markdown
+```{r, echo=FALSE}
+# В пррцессе выполнения было не явно выявленно условие реалиации конечного ответа, поэтому для тестирования, будет выбран такой вариант
+x = sums
+
+```
+```{r}
+
+quantile(x,0.90)
+quantile(x,0.95)
+quantile(x,0.99)
+
+```
+# Plot empirical 95% quantile values versus n; make the conclusionand include it into the markdown.
+```{r}
+
+ print(qnorm(.95, mean(x), sd(x)))
+
+```
+
